@@ -1,3 +1,33 @@
+@rem This file was merged and modified based on "JavaCard Template project with
+@rem Gradle" which was published under MIT license included below.
+@rem https://github.com/crocs-muni/javacard-gradle-template-edu
+@rem
+@rem License from 2020-04-18 https://github.com/crocs-muni/javacard-gradle-template-edu/blob/ebcb012a192092678eb9b7f198be5a6a26136f31/LICENSE
+@rem ~~~
+@rem The MIT License (MIT)
+@rem
+@rem Copyright (c) 2015 Dusan Klinec, Martin Paljak, Petr Svenda
+@rem
+@rem Permission is hereby granted, free of charge, to any person obtaining a copy
+@rem of this software and associated documentation files (the "Software"), to deal
+@rem in the Software without restriction, including without limitation the rights
+@rem to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+@rem copies of the Software, and to permit persons to whom the Software is
+@rem furnished to do so, subject to the following conditions:
+@rem
+@rem The above copyright notice and this permission notice shall be included in all
+@rem copies or substantial portions of the Software.
+@rem
+@rem THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+@rem IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+@rem FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+@rem AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+@rem LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+@rem OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+@rem SOFTWARE.
+@rem ~~~
+@rem
+
 @if "%DEBUG%" == "" @echo off
 @rem ##########################################################################
 @rem
