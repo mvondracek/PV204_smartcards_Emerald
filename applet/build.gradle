@@ -141,7 +141,7 @@ javacard {
 
             //noinspection GroovyAssignabilityCheck
             applet {
-                className 'applet.MainApplet' // TODO Add own applet class
+                className 'applet.EmeraldApplet'
                 aid '01:02:03:04:05:06:07:08:09:01:02'
             }
 

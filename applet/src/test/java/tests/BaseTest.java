@@ -31,7 +31,7 @@ SOFTWARE.
 
 package tests;
 
-import applet.MainApplet;
+import applet.EmeraldApplet;
 import cardTools.CardManager;
 import cardTools.RunConfig;
 import cardTools.Util;
@@ -92,7 +92,7 @@ public class BaseTest {
             runCfg.setTestCardType(RunConfig.CARD_TYPE.PHYSICAL);
         } else {
             // Running in the simulator
-            runCfg.setAppletToSimulate(MainApplet.class) // TODO Add own applet class
+            runCfg.setAppletToSimulate(EmeraldApplet.class)
                     .setTestCardType(RunConfig.CARD_TYPE.JCARDSIMLOCAL)
                     .setbReuploadApplet(true)
                     .setInstallData(installData);
