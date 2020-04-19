@@ -55,9 +55,9 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
     /**
      * Clear session data in RAM.
      *
-     * Intended to be used before and after the applet starts communication session with a reader.
-     * In case the card is incorrectly removed, `deselect` methods might not be called. Therefore,
-     * it is important to clear data even in `select` method.
+     * <p>Intended to be used before and after the applet starts communication session with
+     * a reader. In case the card is incorrectly removed, `deselect` methods might not be called.
+     * Therefore, it is important to clear data even in `select` method.
      * @see #select()
      * @see #select(boolean)
      * @see #deselect()
