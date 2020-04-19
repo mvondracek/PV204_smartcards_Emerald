@@ -32,19 +32,38 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
 
     @Override
     public boolean select() {
+        clearSessionData();
         return true;
     }
 
     @Override
     public boolean select(boolean appInstAlreadyActive) {
+        clearSessionData();
         return true;
     }
 
     @Override
     public void deselect() {
+        clearSessionData();
     }
 
     @Override
     public void deselect(boolean appInstAlreadyActive) {
+        clearSessionData();
+    }
+
+    /**
+     * Clear session data in RAM.
+     *
+     * Intended to be used before and after the applet starts communication session with a reader.
+     * In case the card is incorrectly removed, `deselect` methods might not be called. Therefore,
+     * it is important to clear data even in `select` method.
+     * @see #select()
+     * @see #select(boolean)
+     * @see #deselect()
+     * @see #deselect(boolean)
+     */
+    private void clearSessionData(){
+        // TODO overwrite session data in RAM with random data
     }
 }
