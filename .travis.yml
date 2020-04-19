@@ -6,6 +6,7 @@ jdk:
 env:
   global:
     - CC_TEST_REPORTER_ID=2ff901ea9f54de86ddb0b0c37b950e09a1a7958edcdf472230be713b5dad684b
+    - JACOCO_SOURCE_PATH=applet/src/main/java
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
@@ -15,4 +16,5 @@ script:
   - ./gradlew check --info --stacktrace
   - ./gradlew buildJavaCard --info --stacktrace
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter format-coverage applet/build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
+  - ./cc-test-reporter upload-coverage
