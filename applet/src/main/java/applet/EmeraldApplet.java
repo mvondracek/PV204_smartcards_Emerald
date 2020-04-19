@@ -27,11 +27,21 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
         apdu.setOutgoingAndSend((short) 0, (short) reply.length);
     }
 
-    public boolean select(boolean appInstStillActive) {
+    @Override
+    public boolean select() {
         return true;
     }
 
-    public void deselect(boolean appInstAlreadyActive) {
+    @Override
+    public boolean select(boolean appInstAlreadyActive) {
+        return true;
+    }
 
+    @Override
+    public void deselect() {
+    }
+
+    @Override
+    public void deselect(boolean appInstAlreadyActive) {
     }
 }
