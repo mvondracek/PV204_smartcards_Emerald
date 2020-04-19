@@ -1,0 +1,150 @@
+/*
+This file was merged and modified based on "JavaCard Template project with
+Gradle" which was published under MIT license included below.
+https://github.com/crocs-muni/javacard-gradle-template-edu
+
+License from 2020-04-18 https://github.com/crocs-muni/javacard-gradle-template-edu/blob/ebcb012a192092678eb9b7f198be5a6a26136f31/LICENSE
+~~~
+The MIT License (MIT)
+
+Copyright (c) 2015 Dusan Klinec, Martin Paljak, Petr Svenda
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+~~~
+*/
+
+// Buildscript configuration for the javacard-gradle plugin.
+// Do not modify this particular block. Dependencies for the project are lower.
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.klinec:gradle-javacard:1.6.9'
+    }
+}
+
+apply plugin: 'javacard'
+sourceCompatibility = 1.8
+
+// Apply the jacoco plugin to add support for test coverage
+apply plugin: 'jacoco'
+
+// Common settings, definitions
+final def rootPath = rootDir.absolutePath
+final def libs = rootPath + '/libs'
+final def libsSdk = rootPath + '/libs-sdks'
+
+// Repositories for your project
+repositories {
+    mavenCentral()
+
+    // Repository with JCardSim, Globalplatform, etc, ...
+    maven {
+        url  "https://dl.bintray.com/ph4r05/jcard"
+    }
+
+    // Local lib repository
+    flatDir {
+        dirs libs
+    }
+}
+
+// Dependencies for your project
+dependencies {
+    testImplementation 'org.testng:testng:6.1.1'
+    testImplementation 'org.slf4j:slf4j-api:1.7.2'
+    testImplementation 'org.slf4j:slf4j-log4j12:1.7.2'
+    testImplementation 'org.apache.logging.log4j:log4j-core:2.11.2'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.1'
+
+    jcardsim 'com.klinec:jcardsim:3.0.5.9'
+    
+    // Include plugin as it has bundled GP & other tools.
+    // Alternative: include GP manually, but the included
+    // version has to be compatible with the plugin.
+    runtimeOnly 'com.klinec:gradle-javacard:1.6.9'
+}
+
+test {
+    jvmArgs '-noverify'
+    useJUnitPlatform()
+}
+
+// JavaCard SDKs and libraries
+final def JC212 = libsSdk + '/jc212_kit'
+final def JC221 = libsSdk + '/jc221_kit'
+final def JC222 = libsSdk + '/jc222_kit'
+final def JC303 = libsSdk + '/jc303_kit'
+final def JC304 = libsSdk + '/jc304_kit'
+final def JC305 = libsSdk + '/jc305u1_kit'
+final def JC305u2 = libsSdk + '/jc305u2_kit'
+final def JC305u3 = libsSdk + '/jc305u3_kit'
+// NOTE: Do not use JC310b43 until it's supported by ant-javacard
+// https://github.com/crocs-muni/javacard-gradle-template-edu/issues/2#issuecomment-602757421
+// final def JC310b43 = libsSdk + '/jc310b43_kit'
+
+// Which JavaCard SDK to use - select
+// In order to compile JC222 and lower you have to have Java SDK <= 1.8
+final def JC_SELECTED = JC305u3
+
+javacard {
+
+    //noinspection GroovyAssignabilityCheck
+    config {
+        jckit JC_SELECTED
+
+        // Using custom repo with jcardsim
+        debugGpPro true
+        addSurrogateJcardSimRepo false
+        addImplicitJcardSim false
+        addImplicitJcardSimJunit false
+
+        //noinspection GroovyAssignabilityCheck
+        cap {
+            packageName 'applet'
+            version '0.1'
+            aid '01:02:03:04:05:06:07:08:09'
+            output 'applet.cap'
+            // javaversion '1.7'
+
+            //noinspection GroovyAssignabilityCheck
+            applet {
+                className 'applet.EmeraldApplet'
+                aid '01:02:03:04:05:06:07:08:09:01:02'
+            }
+
+            //noinspection GroovyAssignabilityCheck
+            // dependencies {
+            //     remote 'com.klinec:globalplatform:2.1.1'
+            // }
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled true
+    }
+}
+check.dependsOn jacocoTestReport
