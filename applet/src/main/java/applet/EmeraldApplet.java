@@ -23,7 +23,10 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
 
     public void process(APDU apdu) {
         byte[] reply = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        Util.arrayCopyNonAtomic(reply, (short) 0, apdu.getBuffer(), (short) 0, (short) reply.length);
+        Util.arrayCopyNonAtomic(
+            reply, (short) 0,
+            apdu.getBuffer(), (short) 0,
+            (short) reply.length);
         apdu.setOutgoingAndSend((short) 0, (short) reply.length);
     }
 
