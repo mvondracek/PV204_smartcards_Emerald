@@ -45,17 +45,19 @@ by adding the following line to the `dependencies {}` block.
 compile name: 'test'
 ```
 
-This works only for JAR files placed right in the `/libs` directory (flat hierarchy).
-The artifact group is ignored, artifact is searched just by the name.
+This works only for JAR files placed right in the `/libs` directory (flat
+hierarchy). The artifact group is ignored, artifact is searched just by the
+name.
 
-For subdirectories you have to use the `files()` or `fileTree` as demonstrated below.
+For subdirectories you have to use the `files()` or `fileTree` as demonstrated
+below.
 
 Java 8+ is required.
 
 ## Custom JCardSim
 
-If you want to use custom JCardSim version place your jar in the `libs` directory, e.g., as
-`libs/jcardsim-3.0.6.jar`
+If you want to use custom JCardSim version place your jar in the `libs`
+directory, e.g., as `libs/jcardsim-3.0.6.jar`
 
 Then modify project gradle file `build.gradle`, in particular section
 `dependencies` as follows:
@@ -70,7 +72,7 @@ dependencies {
 
     // Now using custom version.
     jcardsim ':jcardsim:3.0.6'
-        
+
     // Or you can include jcardsim directly:
     // jcardsim files(libs + '/jcardsim-3.0.5.jar')
 }
