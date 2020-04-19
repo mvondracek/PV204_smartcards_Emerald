@@ -29,6 +29,6 @@ SOFTWARE.
 ~~~
 */
 
-rootProject.name = 'jcard'
+rootProject.name = 'PV204_smartcards_Emerald'
 include 'applet'
 

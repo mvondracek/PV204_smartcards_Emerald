@@ -29,15 +29,11 @@ SOFTWARE.
 ~~~
 */
 
-group 'test-applet'
-version '1.0-SNAPSHOT'
-
 // Buildscript configuration for the javacard-gradle plugin.
 // Do not modify this particular block. Dependencies for the project are lower.
 buildscript {
     repositories {
         mavenCentral()
-        // mavenLocal()
     }
     dependencies {
         classpath 'com.klinec:gradle-javacard:1.6.9'
@@ -55,7 +51,6 @@ final def libsSdk = rootPath + '/libs-sdks'
 // Repositories for your project
 repositories {
     mavenCentral()
-    // mavenLocal() // for local maven repository if needed
 
     // Repository with JCardSim, Globalplatform, etc, ...
     maven {
@@ -87,21 +82,8 @@ dependencies {
 }
 
 test {
-    // useTestNG()
     jvmArgs '-noverify'
-
-    useJUnitPlatform {
-        excludeTags 'manual'
-    }
-
-    task manualTests(type: Test) {
-        jvmArgs '-noverify'
-        useJUnitPlatform {
-            includeTags 'manual'
-        }
-        check.dependsOn it
-        shouldRunAfter test
-    }
+    useJUnitPlatform()
 }
 
 // JavaCard SDKs and libraries
