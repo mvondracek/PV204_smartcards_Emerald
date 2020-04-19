@@ -21,3 +21,5 @@ plugins:
         - applet/src/test/
 exclude_patterns:
   - "applet/src/test/"
+  - "gradlew"
+  - "gradlew.bat"

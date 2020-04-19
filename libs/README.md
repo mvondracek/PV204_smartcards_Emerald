@@ -4,6 +4,7 @@ Gradle" which was published under MIT license included below.
 https://github.com/crocs-muni/javacard-gradle-template-edu
 
 License from 2020-04-18 https://github.com/crocs-muni/javacard-gradle-template-edu/blob/ebcb012a192092678eb9b7f198be5a6a26136f31/LICENSE
+
 ~~~
 The MIT License (MIT)
 
@@ -27,13 +28,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ~~~
+
 -->
 
 # JavaCard Libraries
 
 Local `*.jar` dependencies repository.
 
-You can add here local dependencies if there are not available on the 
+You can add here local dependencies if there are not available on the
 Maven central repository or you are not willing to use those.
 
 If there is a `test.jar` file you can add it as a dependency
@@ -45,7 +47,7 @@ compile name: 'test'
 
 This works only for JAR files placed right in the `/libs` directory (flat hierarchy).
 The artifact group is ignored, artifact is searched just by the name.
- 
+
 For subdirectories you have to use the `files()` or `fileTree` as demonstrated below.
 
 Java 8+ is required.
@@ -55,16 +57,17 @@ Java 8+ is required.
 If you want to use custom JCardSim version place your jar in the `libs` directory, e.g., as
 `libs/jcardsim-3.0.6.jar`
 
-Then modify project gradle file `build.gradle`, in particular section `dependencies` as follows:
+Then modify project gradle file `build.gradle`, in particular section
+`dependencies` as follows:
 
 ```gradle
 dependencies {
     testCompile 'org.testng:testng:6.1.1'
     testCompile group: 'com.klinec', name: 'javacard-tools', version: '0.0.1', transitive: false
-    
+
     // Previously, the jcardsim record:
     // jcardsim 'com.licel:jcardsim:3.0.5'
-            
+
     // Now using custom version.
     jcardsim ':jcardsim:3.0.6'
         
@@ -73,7 +76,6 @@ dependencies {
 }
 
 ```
-
 
 ## `globalplatform-2_1_1`
 
@@ -98,4 +100,3 @@ compile fileTree(dir: rootDir.absolutePath + '/libs/visa_openplatform-2_0', incl
 ```
 
 License: no idea
-

@@ -11,4 +11,4 @@
 **Team** Emerald:
 [@OTristanF](https://github.com/OTristanF),
 [@lsolodkova](https://github.com/lsolodkova),
-[@mvondracek](https://github.com/mvondracek) (in alphabetical order). 
+[@mvondracek](https://github.com/mvondracek) (in alphabetical order).
