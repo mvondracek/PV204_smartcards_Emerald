@@ -64,7 +64,7 @@ public class Util {
         }
         return new String(hexChars);
     }
-    
+
     public static byte[] hexStringToByteArray(String s) {
         String sanitized = s.replace(" ", "");
         byte[] b = new byte[sanitized.length() / 2];
@@ -74,10 +74,10 @@ public class Util {
             b[i] = (byte) v;
         }
         return b;
-    }    
-    
-    
-    // Utils 
+    }
+
+
+    // Utils
     public static short getShort(byte[] buffer, int offset) {
         return ByteBuffer.wrap(buffer, offset, 2).order(ByteOrder.BIG_ENDIAN).getShort();
     }
@@ -89,8 +89,8 @@ public class Util {
     public static byte[] shortToByteArray(int s) {
         return new byte[]{(byte) ((s & 0xFF00) >> 8), (byte) (s & 0x00FF)};
     }
-    
-    
+
+
     public static byte[] joinArray(byte[]... arrays) {
         int length = 0;
         for (byte[] array : arrays) {
@@ -137,5 +137,29 @@ public class Util {
         byte[] tmp_conc = concat(a, b);
         return concat(tmp_conc, c);
 
+    }
+
+    /**
+     * Prepare parameter data for applet installation from provided components.
+     */
+    public static byte[] prepareParameterData(byte[] aid, byte[] controlInfo, byte[] appletData) {
+        int parameterDataLength = 1 + aid.length + 1 + controlInfo.length + 1 + appletData.length;
+        int maximumParameterDataLength = 127;
+        if (parameterDataLength > maximumParameterDataLength) {
+            throw new IllegalArgumentException(
+                String.format("Maximum parameter data length exceeded, max=%d, actual=%d",
+                    maximumParameterDataLength, parameterDataLength));
+        }
+        int AIDOffset = 1;
+        int controlInfoOffset = AIDOffset + aid.length + 1;
+        int appletDataOffset = controlInfoOffset + controlInfo.length + 1;
+        byte[] parameterData = new byte[parameterDataLength];
+        parameterData[AIDOffset - 1] = (byte) aid.length;
+        System.arraycopy(aid, 0, parameterData, AIDOffset, aid.length);
+        parameterData[controlInfoOffset - 1] = (byte) controlInfo.length;
+        System.arraycopy(controlInfo, 0, parameterData, controlInfoOffset, controlInfo.length);
+        parameterData[appletDataOffset - 1] = (byte) appletData.length;
+        System.arraycopy(appletData, 0, parameterData, appletDataOffset, appletData.length);
+        return parameterData;
     }
 }
