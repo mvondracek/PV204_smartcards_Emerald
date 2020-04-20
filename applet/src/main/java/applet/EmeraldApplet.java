@@ -7,7 +7,10 @@ Team Emerald (in alphabetical order):
 
 package applet;
 
-import javacard.framework.*;
+import javacard.framework.APDU;
+import javacard.framework.Applet;
+import javacard.framework.MultiSelectable;
+import javacard.framework.Util;
 
 public class EmeraldApplet extends Applet implements MultiSelectable {
     public static final byte PIN_LENGTH = 4;
@@ -45,7 +48,7 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
         // check if bytes of received PIN are only digits <0;9>
         for (int i = 0; i < PIN_LENGTH; i++) {
             byte pinDigit = bArray[appletDataOffset + i];
-            if(! (0 <= pinDigit && pinDigit <= 9)){
+            if (!(0 <= pinDigit && pinDigit <= 9)) {
                 throw new IllegalArgumentException(
                     String.format("Byte value of PIN digit not in range <0;9>, actual=%d", pinDigit));
             }
@@ -122,12 +125,13 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
      * <p>Intended to be used before and after the applet starts communication session with
      * a reader. In case the card is incorrectly removed, `deselect` methods might not be called.
      * Therefore, it is important to clear data even in `select` method.
+     *
      * @see #select()
      * @see #select(boolean)
      * @see #deselect()
      * @see #deselect(boolean)
      */
-    private void clearSessionData(){
+    private void clearSessionData() {
         // TODO overwrite session data in RAM with random data
     }
 }
