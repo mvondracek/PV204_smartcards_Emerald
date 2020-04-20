@@ -9,10 +9,10 @@ package applet;
 
 import javacard.framework.APDU;
 import javacard.framework.Applet;
+import javacard.framework.ISO7816;
+import javacard.framework.ISOException;
 import javacard.framework.MultiSelectable;
 import javacard.framework.Util;
-
-import static javacard.framework.ISO7816.SW_UNKNOWN;
 
 public class EmeraldApplet extends Applet implements MultiSelectable {
     public static final byte PIN_LENGTH = 4;
@@ -31,27 +31,27 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
      * parameters. Calls {@link #register()} on successful initialization.
      */
     EmeraldApplet(byte[] bArray, short bOffset, byte bLength) throws ISOException {
-        byte instanceAIDLength = bArray[bOffset];
-        byte controlInfoLength = bArray[(short)(bOffset + 1 + instanceAIDLength)];
-        byte appletDataLength = bArray[(short)(bOffset + 1 + instanceAIDLength + 1 + controlInfoLength)];
+        byte instanceAidLength = bArray[bOffset];
+        byte controlInfoLength = bArray[(short) (bOffset + 1 + instanceAidLength)];
+        byte appletDataLength = bArray[(short) (bOffset + 1 + instanceAidLength + 1 + controlInfoLength)];
 
-        short appletDataOffset = (short) (bOffset + 1 + instanceAIDLength + 1 + controlInfoLength + 1);
+        short appletDataOffset = (short) (bOffset + 1 + instanceAidLength + 1 + controlInfoLength + 1);
         // first byte of applet data:
-        // bArray[bOffset + 1 + instanceAIDLength + 1 + controlInfoLength + 1]
+        // bArray[bOffset + 1 + instanceAidLength + 1 + controlInfoLength + 1]
         // last byte of applet data:
-        // bArray[bOffset + 1 + instanceAIDLength + 1 + controlInfoLength + 1 + appletDataLength - 1]
+        // bArray[bOffset + 1 + instanceAidLength + 1 + controlInfoLength + 1 + appletDataLength - 1]
 
         // check if we have received PIN
         if (appletDataLength != PIN_LENGTH) {
             // unexpected length of applet data
-            ISOException.throwIt(SW_UNKNOWN);
+            ISOException.throwIt(ISO7816.SW_UNKNOWN);
         }
         // check if bytes of received PIN are only digits <0;9>
         for (short i = 0; i < PIN_LENGTH; i++) {
-            byte pinDigit = bArray[(short)(appletDataOffset + i)];
+            byte pinDigit = bArray[(short) (appletDataOffset + i)];
             if (!(0 <= pinDigit && pinDigit <= 9)) {
                 // byte value of PIN digit not in range <0;9>
-                ISOException.throwIt(SW_UNKNOWN);
+                ISOException.throwIt(ISO7816.SW_UNKNOWN);
             }
         }
 
