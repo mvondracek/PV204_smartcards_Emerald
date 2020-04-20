@@ -7,6 +7,7 @@ Team Emerald (in alphabetical order):
 package applet;
 
 import cardTools.Util;
+import javacard.framework.ISOException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +26,8 @@ class EmeraldAppletTest {
         byte[] parameterData = prepareParameterData(TEST_AID, new byte[0], testPin);
         try {
             EmeraldApplet.install(parameterData, (byte) 0, (byte) parameterData.length);
-            Assert.fail("Expected IllegalArgumentException to be thrown.");
-        } catch (IllegalArgumentException ignored) {
+            Assert.fail("Expected ISOException to be thrown.");
+        } catch (ISOException ignored) {
         }
     }
 
@@ -36,8 +37,8 @@ class EmeraldAppletTest {
         byte[] parameterData = prepareParameterData(TEST_AID, new byte[0], testPin);
         try {
             EmeraldApplet.install(parameterData, (byte) 0, (byte) parameterData.length);
-            Assert.fail("Expected IllegalArgumentException to be thrown.");
-        } catch (IllegalArgumentException ignored) {
+            Assert.fail("Expected ISOException to be thrown.");
+        } catch (ISOException ignored) {
         }
     }
 
@@ -47,8 +48,8 @@ class EmeraldAppletTest {
         byte[] parameterData = prepareParameterData(TEST_AID, new byte[0], testPin);
         try {
             EmeraldApplet.install(parameterData, (byte) 0, (byte) parameterData.length);
-            Assert.fail("Expected IllegalArgumentException to be thrown.");
-        } catch (IllegalArgumentException ignored) {
+            Assert.fail("Expected ISOException to be thrown.");
+        } catch (ISOException ignored) {
         }
     }
 
@@ -58,8 +59,8 @@ class EmeraldAppletTest {
         byte[] parameterData = prepareParameterData(TEST_AID, new byte[0], testPin);
         try {
             EmeraldApplet.install(parameterData, (byte) 0, (byte) parameterData.length);
-            Assert.fail("Expected IllegalArgumentException to be thrown.");
-        } catch (IllegalArgumentException ignored) {
+            Assert.fail("Expected ISOException to be thrown.");
+        } catch (ISOException ignored) {
         }
     }
 
@@ -69,8 +70,8 @@ class EmeraldAppletTest {
         byte[] parameterData = prepareParameterData(TEST_AID, new byte[0], testPin);
         try {
             EmeraldApplet.install(parameterData, (byte) 0, (byte) parameterData.length);
-            Assert.fail("Expected IllegalArgumentException to be thrown.");
-        } catch (IllegalArgumentException ignored) {
+            Assert.fail("Expected ISOException to be thrown.");
+        } catch (ISOException ignored) {
         }
     }
 }

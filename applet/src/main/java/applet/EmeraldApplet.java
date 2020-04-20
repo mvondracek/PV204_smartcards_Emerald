@@ -12,6 +12,8 @@ import javacard.framework.Applet;
 import javacard.framework.MultiSelectable;
 import javacard.framework.Util;
 
+import static javacard.framework.ISO7816.SW_UNKNOWN;
+
 public class EmeraldApplet extends Applet implements MultiSelectable {
     public static final byte PIN_LENGTH = 4;
 
@@ -28,7 +30,7 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
      * <p>Should be used from {@link #install} method. See {@link #install} for description of
      * parameters. Calls {@link #register()} on successful initialization.
      */
-    EmeraldApplet(byte[] bArray, short bOffset, byte bLength) {
+    EmeraldApplet(byte[] bArray, short bOffset, byte bLength) throws ISOException {
         byte instanceAIDLength = bArray[bOffset];
         byte controlInfoLength = bArray[bOffset + 1 + instanceAIDLength];
         byte appletDataLength = bArray[bOffset + 1 + instanceAIDLength + 1 + controlInfoLength];
@@ -41,16 +43,15 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
 
         // check if we have received PIN
         if (appletDataLength != PIN_LENGTH) {
-            throw new IllegalArgumentException(
-                String.format("Unexpected length of applet data, expected=%s, actual=%s",
-                    PIN_LENGTH, appletDataLength));
+            // unexpected length of applet data
+            ISOException.throwIt(SW_UNKNOWN);
         }
         // check if bytes of received PIN are only digits <0;9>
         for (int i = 0; i < PIN_LENGTH; i++) {
             byte pinDigit = bArray[appletDataOffset + i];
             if (!(0 <= pinDigit && pinDigit <= 9)) {
-                throw new IllegalArgumentException(
-                    String.format("Byte value of PIN digit not in range <0;9>, actual=%d", pinDigit));
+                // byte value of PIN digit not in range <0;9>
+                ISOException.throwIt(SW_UNKNOWN);
             }
         }
 
@@ -84,7 +85,7 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
      * @param bLength the length in bytes of the parameter data in bArray The maximum value of
      *                bLength is 127.
      */
-    public static void install(byte[] bArray, short bOffset, byte bLength) {
+    public static void install(byte[] bArray, short bOffset, byte bLength) throws ISOException {
         new EmeraldApplet(bArray, bOffset, bLength);
     }
 
