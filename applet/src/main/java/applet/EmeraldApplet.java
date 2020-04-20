@@ -32,8 +32,8 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
      */
     EmeraldApplet(byte[] bArray, short bOffset, byte bLength) throws ISOException {
         byte instanceAIDLength = bArray[bOffset];
-        byte controlInfoLength = bArray[bOffset + 1 + instanceAIDLength];
-        byte appletDataLength = bArray[bOffset + 1 + instanceAIDLength + 1 + controlInfoLength];
+        byte controlInfoLength = bArray[(short)(bOffset + 1 + instanceAIDLength)];
+        byte appletDataLength = bArray[(short)(bOffset + 1 + instanceAIDLength + 1 + controlInfoLength)];
 
         short appletDataOffset = (short) (bOffset + 1 + instanceAIDLength + 1 + controlInfoLength + 1);
         // first byte of applet data:
@@ -47,8 +47,8 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
             ISOException.throwIt(SW_UNKNOWN);
         }
         // check if bytes of received PIN are only digits <0;9>
-        for (int i = 0; i < PIN_LENGTH; i++) {
-            byte pinDigit = bArray[appletDataOffset + i];
+        for (short i = 0; i < PIN_LENGTH; i++) {
+            byte pinDigit = bArray[(short)(appletDataOffset + i)];
             if (!(0 <= pinDigit && pinDigit <= 9)) {
                 // byte value of PIN digit not in range <0;9>
                 ISOException.throwIt(SW_UNKNOWN);
