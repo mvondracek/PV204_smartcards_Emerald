@@ -138,4 +138,28 @@ public class Util {
         return concat(tmp_conc, c);
 
     }
+
+    /**
+     * Prepare parameter data for applet installation from provided components.
+     */
+    public static byte[] prepareParameterData(byte[] aid, byte[] controlInfo, byte[] appletData) {
+        int parameterDataLength = 1 + aid.length + 1 + controlInfo.length + 1 + appletData.length;
+        int maximumParameterDataLength = 127;
+        if (parameterDataLength > maximumParameterDataLength) {
+            throw new IllegalArgumentException(
+                String.format("Maximum parameter data length exceeded, max=%d, actual=%d",
+                    maximumParameterDataLength, parameterDataLength));
+        }
+        int AIDOffset = 1;
+        int controlInfoOffset = AIDOffset + aid.length + 1;
+        int appletDataOffset = controlInfoOffset + controlInfo.length + 1;
+        byte[] parameterData = new byte[parameterDataLength];
+        parameterData[AIDOffset - 1] = (byte) aid.length;
+        System.arraycopy(aid, 0, parameterData, AIDOffset, aid.length);
+        parameterData[controlInfoOffset - 1] = (byte) controlInfo.length;
+        System.arraycopy(controlInfo, 0, parameterData, controlInfoOffset, controlInfo.length);
+        parameterData[appletDataOffset - 1] = (byte) appletData.length;
+        System.arraycopy(appletData, 0, parameterData, appletDataOffset, appletData.length);
+        return parameterData;
+    }
 }
