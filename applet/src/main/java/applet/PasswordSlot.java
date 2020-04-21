@@ -52,14 +52,14 @@ public class PasswordSlot {
     }
 
     /**
-     * @return Length of currently stored password.
+     * Get length of currently stored password.
      */
     public byte getPasswordLength() {
         return length;
     }
 
     /**
-     * @return Maximum allowed length of password that this slot can store.
+     * Get maximum allowed length of password that this slot can store.
      */
     public byte getPasswordLengthCapacity() {
         return (byte) buffer.length;

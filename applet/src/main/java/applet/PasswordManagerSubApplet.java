@@ -27,6 +27,7 @@ public class PasswordManagerSubApplet {
     // persistent storage for the password manager
     /**
      * Slots for storing user's passwords.
+     *
      * <p>Array of length {@link EmeraldProtocol#PASSWORD_SLOTS_COUNT}.
      */
     private final PasswordSlot[] userPasswordSlots;
@@ -51,8 +52,8 @@ public class PasswordManagerSubApplet {
         byte[] responsePlaintext = new byte[32];
         switch (message[MESSAGE_TYPE_OFFSET]) {
             case MESSAGE_SET_PASSWORD: {
-                if (message[PASSWORD_LENGTH_OFFSET] < 0 ||
-                    message[PASSWORD_LENGTH_OFFSET] > PASSWORD_SLOT_LENGTH) {
+                if (message[PASSWORD_LENGTH_OFFSET] < 0
+                    || message[PASSWORD_LENGTH_OFFSET] > PASSWORD_SLOT_LENGTH) {
                     // invalid password length
                     // attacker is trying to communicate with incorrect PIN
                     // TODO count incorrect counter and consider blocking the card

@@ -17,7 +17,7 @@ public class EmeraldProtocol {
     public static final byte MESSAGE_LENGTH = MESSAGE_HEADER_LENGTH + PASSWORD_SLOT_LENGTH;
 
     /**
-     * Offset of message type (byte) in decrypted data
+     * Offset of message type (byte) in decrypted data.
      */
     public static final byte MESSAGE_TYPE_OFFSET = (byte) 0;
     /**
@@ -61,4 +61,9 @@ public class EmeraldProtocol {
         (byte) 0xEE, (byte) 0x22, (byte) 0xC0, (byte) 0xDE, (byte) 0x00, (byte) 0x00,
         (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
         (byte) 0x00, (byte) 0x00};
+
+    private EmeraldProtocol() {
+        // Constant storage class
+        throw new EmIllegalStateException();
+    }
 }
