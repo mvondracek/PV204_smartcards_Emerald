@@ -13,7 +13,7 @@ public class EmeraldProtocol {
 
     public static final byte MESSAGE_HEADER_LENGTH = 3;
     public static final byte PASSWORD_SLOT_LENGTH = 29;
-    public static final byte MESSAGE_LENGTH = (byte) MESSAGE_HEADER_LENGTH + PASSWORD_SLOT_LENGTH;
+    public static final byte MESSAGE_LENGTH = MESSAGE_HEADER_LENGTH + PASSWORD_SLOT_LENGTH;
 
     /** Offset of message type (byte) in decrypted data */
     public static final byte MESSAGE_TYPE_OFFSET = (byte) 0;
