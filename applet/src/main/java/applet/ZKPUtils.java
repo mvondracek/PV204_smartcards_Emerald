@@ -20,7 +20,7 @@ public class ZKPUtils {
         BigInteger output;
 
         // todo select appropriate hash function
-        MessageDigest dig = MessageDigest.getInstance(MessageDigest.ALG_SHA, true);
+        MessageDigest dig = MessageDigest.getInstance(MessageDigest.ALG_SHA, false);
         byte[] outputBytes = new byte[dig.getLength()];
         dig.doFinal(concatKey, (short) 0, (short) concatKey.length, outputBytes, (short) 0);
         output = new BigInteger(outputBytes);
