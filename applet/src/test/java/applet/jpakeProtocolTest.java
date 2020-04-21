@@ -1,6 +1,5 @@
 package applet;
 
-import com.sun.source.tree.AssertTree;
 import javacard.security.CryptoException;
 import jpake.*;
 import org.bouncycastle.math.ec.ECPoint;
