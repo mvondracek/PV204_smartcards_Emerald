@@ -91,6 +91,6 @@ public class ZKPUtils {
         }
 
         // V == G x [r] + A x [c]
-        return publicV == Gxr.add(Axc);
+        return publicV.equals(Gxr.add(Axc));
     }
 }
