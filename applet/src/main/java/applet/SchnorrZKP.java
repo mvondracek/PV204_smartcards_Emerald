@@ -22,7 +22,6 @@ public class SchnorrZKP {
 
     // User ID used for challenge. The other party knows this
     // (a computer knows that it is communicating with a card)
-    private static final byte[] USER_ID = {'C', 'a', 'r', 'd'};
 
     /**
      *
@@ -34,7 +33,8 @@ public class SchnorrZKP {
     public SchnorrZKP(ECPoint generator,
                       BigInteger primeOrder,
                       BigInteger coFactor,
-                      BigInteger privateRandomKey) {
+                      BigInteger privateRandomKey,
+                      byte[] userID) {
         this.generator = generator;
         this.coFactor = coFactor;
 
@@ -47,7 +47,7 @@ public class SchnorrZKP {
         this.publicV = generator.multiply(randomV);
 
         // The challenge c = H(G || V || A || UserID || OtherInfo)
-        BigInteger challenge = ZKPUtils.computeChallenge(generator, publicV, publicA, USER_ID);
+        BigInteger challenge = ZKPUtils.computeChallenge(generator, publicV, publicA, userID);
 
         // Alice computes r = v – (a * c) mod n (and sends it to Bob)
         this.result = computeResult(randomV, privateRandomKey, challenge, primeOrder);
