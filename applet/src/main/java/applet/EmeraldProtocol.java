@@ -16,7 +16,9 @@ public class EmeraldProtocol {
     public static final byte PASSWORD_SLOTS_COUNT = 3;
     public static final byte MESSAGE_LENGTH = MESSAGE_HEADER_LENGTH + PASSWORD_SLOT_LENGTH;
 
-    /** Offset of message type (byte) in decrypted data */
+    /**
+     * Offset of message type (byte) in decrypted data
+     */
     public static final byte MESSAGE_TYPE_OFFSET = (byte) 0;
     /**
      * Offset of password slot identification number.
@@ -31,16 +33,24 @@ public class EmeraldProtocol {
     /**
      * Offset of password value.
      * Used to set/get password to/from password manager applet.
-     * */
+     */
     public static final byte PASSWORD_VALUE_OFFSET = (byte) 3;
 
-    /** Message from PC to card with intent to set password to selected slot. */
+    /**
+     * Message from PC to card with intent to set password to selected slot.
+     */
     public static final byte MESSAGE_SET_PASSWORD = (byte) 0x5E;
-    /** Message from card to PC confirming that password was set to selected slot. */
+    /**
+     * Message from card to PC confirming that password was set to selected slot.
+     */
     public static final byte MESSAGE_OK_SET = (byte) 0x50;
-    /** Message from PC to card with intent to get password from selected slot. */
+    /**
+     * Message from PC to card with intent to get password from selected slot.
+     */
     public static final byte MESSAGE_GET_PASSWORD = (byte) 0x6E;
-    /** Message from card to PC delivering requested password from selected slot.*/
+    /**
+     * Message from card to PC delivering requested password from selected slot.
+     */
     public static final byte MESSAGE_OK_GET = (byte) 0x60;
 
     // TODO we use static AES key until J-PAKE is implemented

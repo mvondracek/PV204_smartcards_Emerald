@@ -109,13 +109,13 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
         byte[] apduBuffer = apdu.getBuffer();
 
         // ignore SELECT command
-        if(selectingApplet()){
+        if (selectingApplet()) {
             // apduBuffer[ISO7816.OFFSET_CLA] == 0
             // apduBuffer[ISO7816.OFFSET_INS] == (byte) (0xA4)
             return;
         }
 
-        switch(apduBuffer[ISO7816.OFFSET_CLA]){
+        switch (apduBuffer[ISO7816.OFFSET_CLA]) {
             case CLA_PLAINTEXT: {
                 // plaintext communication for initial ECDH
                 // TODO implement J-PAKE for ECDH and set established key to `secureChannelManager`

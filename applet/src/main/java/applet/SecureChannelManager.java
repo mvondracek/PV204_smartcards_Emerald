@@ -7,8 +7,6 @@ Team Emerald (in alphabetical order):
 
 package applet;
 
-import javacard.framework.ISO7816;
-import javacard.framework.ISOException;
 import javacard.security.AESKey;
 import javacard.security.KeyBuilder;
 import javacardx.crypto.Cipher;
@@ -36,7 +34,7 @@ public class SecureChannelManager {
     }
 
     public byte[] encrypt(byte[] plaintext) {
-        if(!aesKey.isInitialized()){
+        if (!aesKey.isInitialized()) {
             // key is not set
             throw new EmIllegalStateException();
         }
@@ -50,7 +48,7 @@ public class SecureChannelManager {
     }
 
     public byte[] decrypt(byte[] ciphertext) {
-        if(!aesKey.isInitialized()){
+        if (!aesKey.isInitialized()) {
             // key is not set
             throw new EmIllegalStateException();
         }
