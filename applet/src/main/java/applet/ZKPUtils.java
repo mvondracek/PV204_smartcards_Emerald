@@ -30,20 +30,16 @@ public class ZKPUtils {
     }
 
     private static byte[] concatenatePublic(ECPoint G, ECPoint V, ECPoint A, byte[] userID) {
-        byte[][] coordinates = {G.getEncoded(false),
-            V.getEncoded(false),
-            A.getEncoded(false)};
-
         // todo find another class to use since this probably wont work on a JC
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        for (byte[] coordinate : coordinates) {
-            try {
-                os.write(coordinate);
-                os.write(userID);
-            } catch (IOException e) {
-                // todo find out what to do when an exception occurs
-                return new byte[]{};
-            }
+        try {
+            os.write(V.getEncoded(false));
+            os.write(A.getEncoded(false));
+            os.write(userID);
+            os.write(G.getEncoded(false));
+        } catch (IOException e) {
+            // todo find out what to do when an exception occurs
+            return new byte[]{};
         }
         return os.toByteArray();
     }
