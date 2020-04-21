@@ -76,12 +76,4 @@ public class SchnorrZKP {
     public ECPoint getPublicV() {
         return publicV;
     }
-
-    public ECPoint getGenerator() {
-        return generator;
-    }
-
-    public BigInteger getCoFactor() {
-        return coFactor;
-    }
 }
