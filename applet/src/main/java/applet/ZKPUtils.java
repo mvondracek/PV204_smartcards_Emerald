@@ -33,7 +33,7 @@ public class ZKPUtils {
         byte[] encodedV = V.getEncoded(false);
         byte[] encodedA = A.getEncoded(false);
         byte[] output = new byte[(short) (encodedG.length + encodedV.length +
-                                 encodedA.length + userID.length)];
+                                 encodedA.length + userID.length + 3)];
         short currStart = 0;
         Util.arrayCopyNonAtomic(encodedG, (short) 0, output, currStart, (short) encodedG.length);
         currStart += encodedG.length + 1;
@@ -67,7 +67,7 @@ public class ZKPUtils {
      * @return A is a valid point on the curve && A x [h] is not at the point of infinity
      * && V == G x [r] + A x [c]
      */
-    public boolean verify(ECPoint publicA, ECPoint generator, ECPoint publicV,
+    public static boolean verify(ECPoint publicA, ECPoint generator, ECPoint publicV,
                           BigInteger coFactor, BigInteger result, BigInteger challenge) {
         ECPoint Axh = publicA.multiply(coFactor);
         ECPoint Gxr = generator.multiply(result);
