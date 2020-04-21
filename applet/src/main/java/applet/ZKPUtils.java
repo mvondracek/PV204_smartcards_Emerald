@@ -1,5 +1,6 @@
 package applet;
 
+import javacard.framework.Util;
 import javacard.security.MessageDigest;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECFieldElement;
@@ -7,8 +8,6 @@ import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
 
 // todo if it is ok to use these
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
@@ -30,18 +29,21 @@ public class ZKPUtils {
     }
 
     private static byte[] concatenatePublic(ECPoint G, ECPoint V, ECPoint A, byte[] userID) {
-        // todo find another class to use since this probably wont work on a JC
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            os.write(G.getEncoded(false));
-            os.write(V.getEncoded(false));
-            os.write(A.getEncoded(false));
-            os.write(userID);
-        } catch (IOException e) {
-            // todo find out what to do when an exception occurs
-            return new byte[]{};
-        }
-        return os.toByteArray();
+        byte[] encodedG = G.getEncoded(false);
+        byte[] encodedV = V.getEncoded(false);
+        byte[] encodedA = A.getEncoded(false);
+        byte[] output = new byte[(short) (encodedG.length + encodedV.length +
+                                 encodedA.length + userID.length)];
+        short currStart = 0;
+        Util.arrayCopyNonAtomic(encodedG, (short) 0, output, currStart, (short) encodedG.length);
+        currStart += encodedG.length + 1;
+        Util.arrayCopyNonAtomic(encodedV, (short) 0, output, currStart, (short) encodedV.length);
+        currStart += encodedV.length + 1;
+        Util.arrayCopyNonAtomic(encodedA, (short) 0, output, currStart, (short) encodedA.length);
+        currStart += encodedA.length + 1;
+        Util.arrayCopyNonAtomic(userID, (short) 0, output, currStart, (short) userID.length);
+
+        return output;
     }
 
     /**
