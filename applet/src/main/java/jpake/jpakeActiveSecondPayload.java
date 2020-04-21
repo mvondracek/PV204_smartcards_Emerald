@@ -1,7 +1,6 @@
 package jpake;
 
 import java.math.BigInteger;
-
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.test.FixedSecureRandom;

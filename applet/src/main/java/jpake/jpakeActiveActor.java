@@ -40,7 +40,7 @@ public final class jpakeActiveActor extends jpakeActor {
         return new jpakeActiveFirstPayload(G1, G2, ZKPx1, ZKPx2);
     }
 
-    public void activeVerifyPassivePayload(jpakePassivePayload ppl) {
+    public void verifyIncoming(jpakePassivePayload ppl) {
         if(this.status != ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED)
             throw new CryptoException(CryptoException.INVALID_INIT);
         //TODO: verification of ZKP sent by passive, if failed, throw an exception
