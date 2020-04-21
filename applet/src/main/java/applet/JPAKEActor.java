@@ -79,11 +79,5 @@ public class JPAKEActor {
         //TODO: obtain ZKP value and construct a payload
         //return new jpakeR2Msg(Gsum, ZKP_secret);
     }
-    public static void main(String args[]) {
-        byte[] uid = "deadbeef".getBytes();
-        byte[] pin_key = new byte[10];
-        JPAKEActor a = new JPAKEActor(uid, pin_key);
-        a.prepareR1Data();
-    }
-    
+
 }
