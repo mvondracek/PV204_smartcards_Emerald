@@ -33,10 +33,10 @@ public class ZKPUtils {
         // todo find another class to use since this probably wont work on a JC
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
+            os.write(G.getEncoded(false));
             os.write(V.getEncoded(false));
             os.write(A.getEncoded(false));
             os.write(userID);
-            os.write(G.getEncoded(false));
         } catch (IOException e) {
             // todo find out what to do when an exception occurs
             return new byte[]{};
