@@ -2,8 +2,6 @@ package applet;
 
 import javacard.framework.Util;
 import javacard.security.MessageDigest;
-import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECFieldElement;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
 
@@ -20,7 +18,7 @@ public class ZKPUtils {
         BigInteger output;
 
         // todo select appropriate hash function
-        MessageDigest dig = MessageDigest.getInstance(MessageDigest.ALG_SHA, false);
+        MessageDigest dig = MessageDigest.getInstance(MessageDigest.ALG_SHA_512, false);
         byte[] outputBytes = new byte[dig.getLength()];
         dig.doFinal(concatKey, (short) 0, (short) concatKey.length, outputBytes, (short) 0);
         output = new BigInteger(outputBytes);
@@ -33,16 +31,15 @@ public class ZKPUtils {
         byte[] encodedV = V.getEncoded(false);
         byte[] encodedA = A.getEncoded(false);
         byte[] output = new byte[(short) (encodedG.length + encodedV.length +
-                                 encodedA.length + userID.length + 3)];
+                                 encodedA.length + userID.length)];
         short currStart = 0;
         Util.arrayCopyNonAtomic(encodedG, (short) 0, output, currStart, (short) encodedG.length);
-        currStart += encodedG.length + 1;
+        currStart += encodedG.length;
         Util.arrayCopyNonAtomic(encodedV, (short) 0, output, currStart, (short) encodedV.length);
-        currStart += encodedV.length + 1;
+        currStart += encodedV.length;
         Util.arrayCopyNonAtomic(encodedA, (short) 0, output, currStart, (short) encodedA.length);
-        currStart += encodedA.length + 1;
+        currStart += encodedA.length;
         Util.arrayCopyNonAtomic(userID, (short) 0, output, currStart, (short) userID.length);
-
         return output;
     }
 
@@ -75,7 +72,8 @@ public class ZKPUtils {
 
         // check if A is a valid point on the curve
         // source: https://stackoverflow.com/a/6664005
-        ECCurve curveOfA = publicA.getCurve();
+        // todo find a way to check it
+        /* ECCurve curveOfA = publicA.getCurve();
         ECFieldElement xOfPublicA = publicA.getXCoord();
         ECFieldElement yOfPublicA = publicA.getYCoord();
         ECFieldElement a = curveOfA.getA();
@@ -83,10 +81,14 @@ public class ZKPUtils {
         ECFieldElement lhs = yOfPublicA.multiply(xOfPublicA);
         ECFieldElement rhs = xOfPublicA.multiply(xOfPublicA)
             .multiply(xOfPublicA).add(a.multiply(xOfPublicA)).add(b);
-        if(!lhs.equals(rhs)) return false;
+        if(!lhs.equals(rhs)) {
+            return false;
+        }*/
 
         // check if A is not on point of infinity
-        if (Axh.isInfinity()) return false;
+        if (Axh.isInfinity()) {
+            return false;
+        }
 
         // V == G x [r] + A x [c]
         return publicV == Gxr.add(Axc);

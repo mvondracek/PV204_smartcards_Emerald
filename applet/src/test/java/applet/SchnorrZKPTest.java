@@ -34,6 +34,5 @@ public class SchnorrZKPTest {
 
         //bob verifies
         assertTrue(ZKPUtils.verify(aliceA, G, aliceV, coFactor, aliceResult, aliceChallenge));
-
     }
 }

@@ -62,7 +62,7 @@ public class SchnorrZKP {
      */
     private BigInteger computeResult(BigInteger randomV, BigInteger privateRandomKey,
                                      BigInteger challenge, BigInteger primeOrder) {
-        return randomV.subtract(privateRandomKey.multiply(challenge).mod(primeOrder));
+        return randomV.subtract((privateRandomKey.multiply(challenge).mod(primeOrder)));
     }
 
     public BigInteger getResult() {
