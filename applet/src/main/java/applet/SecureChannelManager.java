@@ -28,7 +28,7 @@ public class SecureChannelManager {
     public void setKey(byte[] key) {
         if ((short) (key.length * 8) != KeyBuilder.LENGTH_AES_256) {
             // incorrect key length
-            ISOException.throwIt(ISO7816.SW_UNKNOWN);
+            throw new EmIllegalArgumentException();
         }
         aesKey.setKey(key, (short) 0);
         aesEncrypt.init(aesKey, Cipher.MODE_ENCRYPT);
@@ -38,11 +38,11 @@ public class SecureChannelManager {
     public byte[] encrypt(byte[] plaintext) {
         if(!aesKey.isInitialized()){
             // key is not set
-            ISOException.throwIt(ISO7816.SW_UNKNOWN);
+            throw new EmIllegalStateException();
         }
         if (plaintext.length % 16 != 0) {
             // plaintext length is not a multiple of AES block size (16 B)
-            ISOException.throwIt(ISO7816.SW_UNKNOWN);
+            throw new EmIllegalArgumentException();
         }
         byte[] ciphertext = new byte[plaintext.length];
         aesEncrypt.doFinal(plaintext, (short) 0, (short) plaintext.length, ciphertext, (short) 0);
@@ -52,11 +52,11 @@ public class SecureChannelManager {
     public byte[] decrypt(byte[] ciphertext) {
         if(!aesKey.isInitialized()){
             // key is not set
-            ISOException.throwIt(ISO7816.SW_UNKNOWN);
+            throw new EmIllegalStateException();
         }
         if (ciphertext.length % 16 != 0) {
             // ciphertext length is not a multiple of AES block size (16 B)
-            ISOException.throwIt(ISO7816.SW_UNKNOWN);
+            throw new EmIllegalArgumentException();
         }
         byte[] plaintext = new byte[ciphertext.length];
         aesDecrypt.doFinal(ciphertext, (short) 0, (short) ciphertext.length, plaintext, (short) 0);
