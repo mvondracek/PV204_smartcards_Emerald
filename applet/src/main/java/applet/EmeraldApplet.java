@@ -7,17 +7,8 @@ Team Emerald (in alphabetical order):
 
 package applet;
 
-import static applet.EmeraldProtocol.MESSAGE_OK_GET;
-import static applet.EmeraldProtocol.MESSAGE_OK_SET;
-import static applet.EmeraldProtocol.MESSAGE_TYPE_OFFSET;
 import static applet.EmeraldProtocol.CLA_ENCRYPTED;
 import static applet.EmeraldProtocol.CLA_PLAINTEXT;
-import static applet.EmeraldProtocol.MESSAGE_GET_PASSWORD;
-import static applet.EmeraldProtocol.MESSAGE_SET_PASSWORD;
-import static applet.EmeraldProtocol.PASSWORD_LENGTH_OFFSET;
-import static applet.EmeraldProtocol.PASSWORD_SLOT_ID_OFFSET;
-import static applet.EmeraldProtocol.PASSWORD_SLOT_LENGTH;
-import static applet.EmeraldProtocol.PASSWORD_VALUE_OFFSET;
 import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
 import javacard.framework.APDU;
 import javacard.framework.Applet;
@@ -36,19 +27,9 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
      */
     private final byte[] pin; // TODO store pin securely
     private final SecureChannelManager secureChannelManager;
+    private final PasswordManagerSubApplet passwordManagerSubApplet;
 
     private final byte[] ramBuffer;
-
-    //region applet example functionality: password manager
-    private final byte[] userPasswordSlot1;
-    private final byte[] userPasswordSlot1UsedLength;
-    private final byte[] userPasswordSlot2;
-    private final byte[] userPasswordSlot2UsedLength;
-    private final byte[] userPasswordSlot3;
-    private final byte[] userPasswordSlot3UsedLength;
-    //endregion
-
-
 
     /**
      * Create instance of the applet.
@@ -56,7 +37,7 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
      * <p>Should be used from {@link #install} method. See {@link #install} for description of
      * parameters. Calls {@link #register()} on successful initialization.
      */
-    EmeraldApplet(byte[] bArray, short bOffset, byte bLength) throws ISOException {
+    EmeraldApplet(byte[] bArray, short bOffset, @SuppressWarnings("unused") byte bLength) throws ISOException {
         byte instanceAidLength = bArray[bOffset];
         byte controlInfoLength = bArray[(short) (bOffset + 1 + instanceAidLength)];
         byte appletDataLength = bArray[(short) (bOffset + 1 + instanceAidLength + 1 + controlInfoLength)];
@@ -91,15 +72,8 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
         secureChannelManager.setKey(aesKeyDevelopmentTODO); // TODO replace with J-PAKE
 
         ramBuffer = JCSystem.makeTransientByteArray((short) 160, JCSystem.CLEAR_ON_DESELECT);
-        //region applet example functionality: password manager
-        // persistent storage for the password manager
-        userPasswordSlot1 = new byte[PASSWORD_SLOT_LENGTH];
-        userPasswordSlot1UsedLength = new byte[]{0};
-        userPasswordSlot2 = new byte[PASSWORD_SLOT_LENGTH];
-        userPasswordSlot2UsedLength = new byte[]{0};
-        userPasswordSlot3 = new byte[PASSWORD_SLOT_LENGTH];
-        userPasswordSlot3UsedLength = new byte[]{0};
-        //endregion
+
+        passwordManagerSubApplet = new PasswordManagerSubApplet();
 
         // initialization successful
         register();
@@ -135,97 +109,51 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
         byte[] apduBuffer = apdu.getBuffer();
 
         // ignore SELECT command
-        // if selectingApplet()
-        if ((apduBuffer[ISO7816.OFFSET_CLA] == 0) &&
-            (apduBuffer[ISO7816.OFFSET_INS] == (byte) (0xA4))) {
+        if(selectingApplet()){
+            // apduBuffer[ISO7816.OFFSET_CLA] == 0
+            // apduBuffer[ISO7816.OFFSET_INS] == (byte) (0xA4)
             return;
         }
 
-        if(apduBuffer[ISO7816.OFFSET_CLA] == CLA_PLAINTEXT) {
-            byte[] reply = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-            Util.arrayCopyNonAtomic(
-                reply, (short) 0,
-                apdu.getBuffer(), (short) 0,
-                (short) reply.length);
-            apdu.setOutgoingAndSend((short) 0, (short) reply.length);
-            return;
-        }
+        switch(apduBuffer[ISO7816.OFFSET_CLA]){
+            case CLA_PLAINTEXT: {
+                // plaintext communication for initial ECDH
+                // TODO implement J-PAKE for ECDH and set established key to `secureChannelManager`
 
-        if(apduBuffer[ISO7816.OFFSET_CLA] == CLA_ENCRYPTED){
-            short dataLength = apdu.setIncomingAndReceive();
-            // save ciphertext to ramBuffer
-            Util.arrayCopyNonAtomic(apduBuffer, ISO7816.OFFSET_CDATA, ramBuffer, (short) 0, dataLength);
-            byte[] plaintext = secureChannelManager.decrypt(ramBuffer);
-
-            //region applet example functionality: password manager
-            byte[] selectedPasswordSlot;
-            byte[] selectedPasswordSlotUsedLength;
-
-            switch(plaintext[PASSWORD_SLOT_ID_OFFSET]){
-                case 1:
-                    selectedPasswordSlot = userPasswordSlot1;
-                    selectedPasswordSlotUsedLength = userPasswordSlot1UsedLength;
-                    break;
-                case 2:
-                    selectedPasswordSlot = userPasswordSlot2;
-                    selectedPasswordSlotUsedLength = userPasswordSlot2UsedLength;
-                    break;
-                case 3:
-                    selectedPasswordSlot = userPasswordSlot3;
-                    selectedPasswordSlotUsedLength = userPasswordSlot3UsedLength;
-                    break;
-                default:
-                    // incorrect password slot
-                    // attacker is trying to communicate with incorrect PIN
-                    // TODO count incorrect counter and consider blocking the card
-                    return;
+                // example plaintext communication
+                // TODO remove when J-PAKE is implemented
+                byte[] reply = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+                Util.arrayCopyNonAtomic(
+                    reply, (short) 0,
+                    apdu.getBuffer(), (short) 0,
+                    (short) reply.length);
+                apdu.setOutgoingAndSend((short) 0, (short) reply.length);
+                break;
             }
 
-            switch(plaintext[MESSAGE_TYPE_OFFSET]){
-                case MESSAGE_SET_PASSWORD: {
-                    if(plaintext[PASSWORD_LENGTH_OFFSET] > PASSWORD_SLOT_LENGTH){
-                        // invalid password length
-                        // attacker is trying to communicate with incorrect PIN
-                        // TODO count incorrect counter and consider blocking the card
-                        return;
-                    }
-                    selectedPasswordSlotUsedLength[0] = plaintext[PASSWORD_LENGTH_OFFSET];
-                    // set password to selected slot
-                    Util.arrayCopyNonAtomic(plaintext, PASSWORD_VALUE_OFFSET,
-                        selectedPasswordSlot, (short) 0, selectedPasswordSlotUsedLength[0]);
-                    // send response
-                    byte[] responsePlaintext = new byte[32];
-                    responsePlaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_OK_SET;
-                    byte[] responseCiphertext = secureChannelManager.encrypt(responsePlaintext);
-                    Util.arrayCopyNonAtomic(responseCiphertext, (short) 0,
-                        apduBuffer, ISO7816.OFFSET_CDATA, (short) responseCiphertext.length);
-                    apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) responseCiphertext.length);
-                    break;
-                }
-                case MESSAGE_GET_PASSWORD: {
-                    // send response
-                    byte[] responsePlaintext = new byte[32];
-                    responsePlaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_OK_GET;
-                    responsePlaintext[PASSWORD_SLOT_ID_OFFSET] = plaintext[PASSWORD_SLOT_ID_OFFSET];
-                    responsePlaintext[PASSWORD_LENGTH_OFFSET] = selectedPasswordSlotUsedLength[0];
+            case CLA_ENCRYPTED: {
+                // encrypted communication using secure channel after successful ECDH
+                short dataLength = apdu.setIncomingAndReceive();
+                // decrypt incoming message
+                Util.arrayCopyNonAtomic(apduBuffer, ISO7816.OFFSET_CDATA, ramBuffer, (short) 0,
+                    dataLength);
+                byte[] plaintext = secureChannelManager.decrypt(ramBuffer);
 
-                    // get password from selected slot
-                    Util.arrayCopyNonAtomic(selectedPasswordSlot, (short) 0,
-                        responsePlaintext, PASSWORD_VALUE_OFFSET, selectedPasswordSlotUsedLength[0]);
+                // forward decrypted message to SubApplet
+                byte[] responsePlaintext = passwordManagerSubApplet.process(plaintext);
 
-                    byte[] responseCiphertext = secureChannelManager.encrypt(responsePlaintext);
-                    Util.arrayCopyNonAtomic(responseCiphertext, (short) 0,
-                        apduBuffer, ISO7816.OFFSET_CDATA, (short) responseCiphertext.length);
-                    apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) responseCiphertext.length);
-                    break;
-                }
-                default:
-                    // incorrect message
-                    // attacker is trying to communicate with incorrect PIN
-                    // TODO count incorrect counter and consider blocking the card
-                    return;
+                // encrypt outgoing message and send
+                byte[] responseCiphertext = secureChannelManager.encrypt(responsePlaintext);
+                Util.arrayCopyNonAtomic(responseCiphertext, (short) 0,
+                    apduBuffer, ISO7816.OFFSET_CDATA, (short) responseCiphertext.length);
+                apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) responseCiphertext.length);
+                break;
             }
-            //endregion
+
+            default: {
+                // unknown APDU class
+                break;
+            }
         }
 
     }

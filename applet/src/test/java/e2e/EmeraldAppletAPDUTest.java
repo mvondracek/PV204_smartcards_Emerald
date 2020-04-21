@@ -15,6 +15,7 @@ import static applet.EmeraldProtocol.MESSAGE_OK_SET;
 import static applet.EmeraldProtocol.MESSAGE_SET_PASSWORD;
 import static applet.EmeraldProtocol.MESSAGE_TYPE_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_LENGTH_OFFSET;
+import static applet.EmeraldProtocol.PASSWORD_SLOTS_COUNT;
 import static applet.EmeraldProtocol.PASSWORD_SLOT_ID_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_VALUE_OFFSET;
 import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
@@ -50,13 +51,12 @@ public class EmeraldAppletAPDUTest extends BaseTest {
 
     @Test
     public void setSinglePassword() throws Exception {
-        String[] testPasswords = new String[]{"mySuperSecretPassword", "foo bar", "123"};
-        for (byte passwordSlotId = 1; passwordSlotId <= 3; passwordSlotId++) {
+        byte[] password = "mySuperSecretPassword".getBytes();
+        for (byte passwordSlotId = 0; passwordSlotId < PASSWORD_SLOTS_COUNT; passwordSlotId++) {
             final SecureChannelManager secureChannelManager = new SecureChannelManager();
             // TODO we use static AES key until J-PAKE is implemented
             secureChannelManager.setKey(aesKeyDevelopmentTODO); // TODO replace with J-PAKE
 
-            byte[] password = testPasswords[passwordSlotId - 1].getBytes();
             byte[] plaintext = new byte[MESSAGE_LENGTH];
             plaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_SET_PASSWORD;
             plaintext[PASSWORD_SLOT_ID_OFFSET] = passwordSlotId;
@@ -79,14 +79,13 @@ public class EmeraldAppletAPDUTest extends BaseTest {
 
     @Test
     public void setGetSinglePassword() throws Exception {
-        String[] testPasswords = new String[]{"mySuperSecretPassword", "foo bar", "123"};
-        for (byte passwordSlotId = 1; passwordSlotId <= 3; passwordSlotId++) {
+        byte[] password = "mySuperSecretPassword".getBytes();
+        for (byte passwordSlotId = 0; passwordSlotId < PASSWORD_SLOTS_COUNT; passwordSlotId++) {
             //region set password
             final SecureChannelManager secureChannelManager = new SecureChannelManager();
             // TODO we use static AES key until J-PAKE is implemented
             secureChannelManager.setKey(aesKeyDevelopmentTODO); // TODO replace with J-PAKE
 
-            byte[] password = testPasswords[passwordSlotId - 1].getBytes();
             byte[] plaintext = new byte[MESSAGE_LENGTH];
             plaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_SET_PASSWORD;
             plaintext[PASSWORD_SLOT_ID_OFFSET] = passwordSlotId;
