@@ -32,4 +32,5 @@ SOFTWARE.
 rootProject.name = 'PV204_smartcards_Emerald'
 include ':applet'
 include ':emCardTools'
+include ':emApplication'
 
