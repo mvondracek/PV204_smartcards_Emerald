@@ -55,4 +55,9 @@ public class SchnorrZKPTest {
         //bob verifies
         assertFalse(ZKPUtils.verify(aliceA, G, aliceV, coFactor, aliceResult, aliceChallenge));
     }
+
+    @Test
+    void testPointVerificationTrue() {
+        assertTrue(ZKPUtils.isValidPoint(G));
+    }
 }

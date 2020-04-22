@@ -87,7 +87,7 @@ public class ZKPUtils {
      * @param point ECPoint to check
      * @return true if point is a valid point on the curve
      */
-    private static boolean isValidPoint(ECPoint point) {
+    public static boolean isValidPoint(ECPoint point) {
         ECCurve curve = point.getCurve();
         BigInteger x = point.getXCoord().toBigInteger();
         BigInteger y = point.getYCoord().toBigInteger();
