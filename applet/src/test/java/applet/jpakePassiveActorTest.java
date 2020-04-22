@@ -13,7 +13,8 @@ public class jpakePassiveActorTest {
     public void wrongStatusBeforePreparingPayload() {
 
         byte[] uid = "deadbeef".getBytes();
-        byte[] pin_key = new byte[10]; //pin is 0(x10) now
+        byte[] pin_key = {1,1,1,1};
+        //TODO: pin-derived key should never be all zero!!!
         jpake.jpakePassiveActor p = new jpake.jpakePassiveActor(uid, pin_key);
         try {
             p.preparePassivePayload();  //that should fail, since we have wrong status

@@ -13,7 +13,8 @@ class jpakeProtocolTest {
     public void ifObtainedKeyIsTheSame() throws CryptoException{
         byte[] auid = "Alice".getBytes();
         byte[] buid = "Bob".getBytes();
-        byte[] pin_key = new byte[10]; //pin is 0(x10) now
+        byte[] pin_key = {1,1,1,1};
+        //TODO: pin-derived key should never be all zero!!!
         jpake.jpakeActiveActor a = new jpake.jpakeActiveActor(auid, pin_key);
         jpake.jpakePassiveActor b = new jpakePassiveActor(buid, pin_key);
         jpakeActiveFirstPayload afp = a.prepareFirstPayload();
