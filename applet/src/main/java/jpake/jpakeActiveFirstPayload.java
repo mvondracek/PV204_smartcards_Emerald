@@ -53,7 +53,6 @@ public final class jpakeActiveFirstPayload {
     }
 
     public byte[] toBytes(){
-        //format:
         byte[] encodedG1 = G1.getEncoded(false);
         byte[] encodedG2 = G2.getEncoded(false);
         byte[] publicA1Encoded = ZKPx1.getPublicA().getEncoded(false);
