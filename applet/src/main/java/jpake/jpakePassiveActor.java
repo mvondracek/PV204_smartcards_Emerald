@@ -7,7 +7,6 @@ import applet.EmIllegalStateException;
 import applet.SchnorrZKP;
 import applet.ZKPPayload;
 import applet.ZKPUtils;
-import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
 
@@ -26,7 +25,7 @@ public final class jpakePassiveActor extends jpakeActor{
     public void verifyFirstIncoming(jpakeActiveFirstPayload afpl)
     {
         if(this.status != PASSIVE_STATUS.PS_INIT)
-            throw new CryptoException(CryptoException.INVALID_INIT);
+            throw new EmIllegalStateException();
         ZKPPayload zkpx1 = afpl.getZKPx1();
         ZKPPayload zkpx2 = afpl.getZKPx2();
         BigInteger challenge1 = ZKPUtils.computeChallenge(G, zkpx1.getPublicV(), zkpx1.getPublicA(), afpl.getSenderID());
@@ -44,7 +43,7 @@ public final class jpakePassiveActor extends jpakeActor{
     public jpakePassivePayload preparePassivePayload()
     {
         if(this.status != PASSIVE_STATUS.PS_FIRST_INCOMING_VERIFIED)
-            throw new CryptoException(CryptoException.INVALID_INIT);
+            throw new EmIllegalStateException();
 
         this.x1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
         this.x2 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
@@ -67,7 +66,7 @@ public final class jpakePassiveActor extends jpakeActor{
     public void verifySecondIncoming(jpakeActiveSecondPayload aspl)
     {
         if(this.status != PASSIVE_STATUS.PS_PASSIVE_PAYLOAD_PREPARED)
-            throw new CryptoException(CryptoException.INVALID_INIT);
+            throw new EmIllegalStateException();
 
         ZKPPayload zkpx2s = aspl.getZKPx2s();
         BigInteger challenge = ZKPUtils.computeChallenge(G, zkpx2s.getPublicV(), zkpx2s.getPublicA(), aspl.getSenderID());
@@ -82,7 +81,7 @@ public final class jpakePassiveActor extends jpakeActor{
     public byte[] derivePlainCommonKey()
     {
         if(this.status != PASSIVE_STATUS.PS_SECOND_INCOMING_VERIFIED)
-            throw new CryptoException(CryptoException.INVALID_INIT);
+            throw new EmIllegalStateException();
 
         byte[] key = super.derivePlainCommonKey();
         this.status = PASSIVE_STATUS.PS_KEY_DERIVED;

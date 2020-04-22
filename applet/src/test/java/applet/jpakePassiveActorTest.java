@@ -20,7 +20,7 @@ public class jpakePassiveActorTest {
             p.preparePassivePayload();  //that should fail, since we have wrong status
             fail( "preparePassivePayload didn't thrown an exception");
         }
-        catch (CryptoException ce){
+        catch (EmIllegalStateException ce){
 
         }
 

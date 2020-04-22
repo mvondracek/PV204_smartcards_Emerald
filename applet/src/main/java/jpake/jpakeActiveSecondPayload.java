@@ -58,7 +58,6 @@ public final class jpakeActiveSecondPayload {
         output[currStart] = (byte)encResult.length;
         currStart += 1;
         Util.arrayCopyNonAtomic(encResult, (short) 0, output, currStart, (short)encResult.length);
-        currStart += encResult.length;
         return output;
     }
 
