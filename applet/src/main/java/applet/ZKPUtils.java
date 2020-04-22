@@ -36,14 +36,14 @@ public class ZKPUtils {
         //TODO: arrayCopyNonAtomic throws UnsatisfiedLinkException - needs to be fixed
         Util.arrayCopyNonAtomic(encodedG, (short) 0, output, currStart, (short) encodedG.length);
         currStart += encodedG.length;
-        System.arraycopy(encodedV, (int)0, output, currStart, encodedV.length);
-        //Util.arrayCopyNonAtomic(encodedV, (short) 0, output, currStart, (short) encodedV.length);
+        //System.arraycopy(encodedV, (int)0, output, currStart, encodedV.length);
+        Util.arrayCopyNonAtomic(encodedV, (short) 0, output, currStart, (short) encodedV.length);
         currStart += encodedV.length;
-        System.arraycopy(encodedA, (int)0, output, currStart, encodedA.length);
-        //Util.arrayCopyNonAtomic(encodedA, (short) 0, output, currStart, (short) encodedA.length);
+        //System.arraycopy(encodedA, (int)0, output, currStart, encodedA.length);
+        Util.arrayCopyNonAtomic(encodedA, (short) 0, output, currStart, (short) encodedA.length);
         currStart += encodedA.length;
-        System.arraycopy(userID, (int)0, output, currStart, userID.length);
-        //Util.arrayCopyNonAtomic(userID, (short) 0, output, currStart, (short) userID.length);
+        //System.arraycopy(userID, (int)0, output, currStart, userID.length);
+        Util.arrayCopyNonAtomic(userID, (short) 0, output, currStart, (short) userID.length);
 
         return output;
     }
