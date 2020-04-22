@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+configurations {
+    priority
+    sourceSets.main.compileClasspath = configurations.priority + sourceSets.main.compileClasspath
+    sourceSets.main.runtimeClasspath = configurations.priority + sourceSets.main.runtimeClasspath
+    sourceSets.test.compileClasspath = configurations.priority + sourceSets.test.compileClasspath
+    sourceSets.test.runtimeClasspath = configurations.priority + sourceSets.test.runtimeClasspath
+}
+
+dependencies {
+    priority 'com.klinec:jcardsim:3.0.5.9'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile project(':applet')
+    compile project(':emCardTools')
+}
+
+run{
+    standardInput = System.in
+}
+
+mainClassName = 'emapplication.EmeraldApplicationCli'
