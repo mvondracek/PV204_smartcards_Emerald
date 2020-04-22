@@ -26,6 +26,7 @@ public abstract class jpakeActor {
     protected ECNamedCurveParameterSpec curvespec = ECNamedCurveTable.getParameterSpec("curve25519");
     protected ECPoint G = curvespec.getG();   /*subgroup generator*/
     protected BigInteger n = curvespec.getN(); /*order of subrgoup*/
+    protected BigInteger coFactor = curvespec.getH();
     protected byte[] userID;
     protected BigInteger pinKey;
 

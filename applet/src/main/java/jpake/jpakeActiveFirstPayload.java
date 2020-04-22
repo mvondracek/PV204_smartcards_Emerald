@@ -8,16 +8,18 @@ Team Emerald (in alphabetical order):
 package jpake;
 
 import java.math.BigInteger;
+
+import applet.ZKPPayload;
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
 
 public final class jpakeActiveFirstPayload {
     private final ECPoint G1;
     private final ECPoint G2;
-    private final BigInteger ZKPx1;
-    private final BigInteger ZKPx2;
+    private final ZKPPayload ZKPx1;
+    private final ZKPPayload ZKPx2;
 
-    public jpakeActiveFirstPayload(ECPoint G1, ECPoint G2, BigInteger ZKPx1, BigInteger ZKPx2){
+    public jpakeActiveFirstPayload(ECPoint G1, ECPoint G2, ZKPPayload ZKPx1, ZKPPayload ZKPx2){
         if(G1 == null || G2 == null || ZKPx1 == null || ZKPx2 == null){
             throw new CryptoException(CryptoException.ILLEGAL_VALUE);
         }
@@ -34,10 +36,10 @@ public final class jpakeActiveFirstPayload {
     public ECPoint getG2() {
         return this.G2;
     }
-    public BigInteger getZKPx1() {
+    public ZKPPayload getZKPx1() {
         return this.ZKPx1;
     }
-    public BigInteger getZKPx2() {
+    public ZKPPayload getZKPx2() {
         return this.ZKPx2;
     }
 }

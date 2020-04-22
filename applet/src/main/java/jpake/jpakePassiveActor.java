@@ -3,6 +3,8 @@ package jpake;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+import applet.SchnorrZKP;
+import applet.ZKPPayload;
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
@@ -41,12 +43,15 @@ public final class jpakePassiveActor extends jpakeActor{
         this.G2 = G.multiply(x2);
 
         ECPoint B = G1_recv.add(G2_recv.add(G1)).multiply(x2.multiply(pinKey).mod(n));
-        //TODO: obtain ZKP for x1, x2, and x2*pinKey
-        BigInteger ZKPx1 = BigIntegers.ZERO;
-        BigInteger ZKPx2 = BigIntegers.ZERO;
-        BigInteger ZKPx2s = BigIntegers.ZERO;
+        SchnorrZKP szkpx1 = new SchnorrZKP(G, n, coFactor, x1, this.userID);
+        ZKPPayload zkpx1 = new ZKPPayload(szkpx1.getPublicA(), szkpx1.getPublicV(),szkpx1.getResult());
+        SchnorrZKP szkpx2 = new SchnorrZKP(G, n, coFactor, x2, this.userID);
+        ZKPPayload zkpx2 = new ZKPPayload(szkpx2.getPublicA(), szkpx2.getPublicV(),szkpx2.getResult());
+        SchnorrZKP szkpx2s = new SchnorrZKP(G, n, coFactor, x2.multiply(pinKey).mod(n), this.userID);
+        ZKPPayload zkpx2s = new ZKPPayload(szkpx2s.getPublicA(), szkpx2s.getPublicV(),szkpx2s.getResult());
+
         this.status = PASSIVE_STATUS.PS_PASSIVE_PAYLOAD_PREPARED;
-        return new jpakePassivePayload(G1,G2,B,ZKPx1,ZKPx2,ZKPx2s);
+        return new jpakePassivePayload(G1,G2,B,zkpx1,zkpx2,zkpx2s);
     }
 
     public void verifySecondIncoming(jpakeActiveSecondPayload aspl)

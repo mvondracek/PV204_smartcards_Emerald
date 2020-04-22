@@ -3,6 +3,8 @@ package jpake;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+import applet.SchnorrZKP;
+import applet.ZKPPayload;
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
@@ -33,11 +35,12 @@ public final class jpakeActiveActor extends jpakeActor {
         G2 = G.multiply(x2);
 
         //TODO: next we need to calculate ZKP for x1 and x2
-        BigInteger ZKPx1 = BigIntegers.ZERO;
-        BigInteger ZKPx2 = BigIntegers.ZERO;
-
+        SchnorrZKP szkpx1 = new SchnorrZKP(G, n, coFactor, x1, this.userID);
+        ZKPPayload zkpx1 = new ZKPPayload(szkpx1.getPublicA(), szkpx1.getPublicV(),szkpx1.getResult());
+        SchnorrZKP szkpx2 = new SchnorrZKP(G, n, coFactor, x2, this.userID);
+        ZKPPayload zkpx2 = new ZKPPayload(szkpx2.getPublicA(), szkpx2.getPublicV(),szkpx2.getResult());
         this.status = ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED;
-        return new jpakeActiveFirstPayload(G1, G2, ZKPx1, ZKPx2);
+        return new jpakeActiveFirstPayload(G1, G2, zkpx1, zkpx2);
     }
 
     public void verifyIncoming(jpakePassivePayload ppl) {
@@ -54,10 +57,10 @@ public final class jpakeActiveActor extends jpakeActor {
         if(this.status != ACTIVE_STATUS.AS_INCOMING_VERIFIED)
             throw new CryptoException(CryptoException.INVALID_INIT);
         ECPoint A = G1.add(G1_recv.add(G2_recv)).multiply(x2.multiply(pinKey).mod(n));
-        //TODO: get ZKP for x2*pinKey
-        BigInteger ZKPx2s = BigIntegers.ZERO;
+        SchnorrZKP szkpx2s = new SchnorrZKP(G, n, coFactor, x2.multiply(pinKey).mod(n), this.userID);
+        ZKPPayload zkpx2s = new ZKPPayload(szkpx2s.getPublicA(), szkpx2s.getPublicV(),szkpx2s.getResult());
         this.status = ACTIVE_STATUS.AS_SECOND_PAYLOAD_PREPARED;
-        return new jpakeActiveSecondPayload(A, ZKPx2s);
+        return new jpakeActiveSecondPayload(A, zkpx2s);
     }
 
     public ECPoint computeCommonKey() {
