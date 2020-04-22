@@ -10,6 +10,18 @@ package emApplication;
 
 import applet.EmeraldApplet;
 import applet.EmeraldProtocol;
+import static applet.EmeraldProtocol.CLA_ENCRYPTED;
+import static applet.EmeraldProtocol.MESSAGE_GET_PASSWORD;
+import static applet.EmeraldProtocol.MESSAGE_LENGTH;
+import static applet.EmeraldProtocol.MESSAGE_OK_GET;
+import static applet.EmeraldProtocol.MESSAGE_OK_SET;
+import static applet.EmeraldProtocol.MESSAGE_SET_PASSWORD;
+import static applet.EmeraldProtocol.MESSAGE_TYPE_OFFSET;
+import static applet.EmeraldProtocol.PASSWORD_LENGTH_OFFSET;
+import static applet.EmeraldProtocol.PASSWORD_SLOT_ID_OFFSET;
+import static applet.EmeraldProtocol.PASSWORD_VALUE_OFFSET;
+import static applet.EmeraldProtocol.PIN_LENGTH;
+import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
 import applet.SecureChannelManager;
 import emCardTools.CardManager;
 import emCardTools.RunConfig;
@@ -20,6 +32,7 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class EmeraldApplicationCli {
     public static final String AID = "0102030405060708090102";
@@ -29,13 +42,20 @@ public class EmeraldApplicationCli {
     final SecureChannelManager secureChannelManager;
 
 
-    public  EmeraldApplicationCli(){
+    public EmeraldApplicationCli() {
         cardManager = new CardManager(true, AID_BYTES);
         secureChannelManager = new SecureChannelManager();
     }
 
-    public void run(){
-        System.out.println("Emerald Password Manager on Smartcard.");
+    public static void main(String[] args) {
+        final EmeraldApplicationCli cli = new EmeraldApplicationCli();
+        cli.run();
+        System.out.println("exit");
+    }
+
+    public void run() {
+        printBanner();
+        // connect to the card
         try {
             connect(RunConfig.CARD_TYPE.JCARDSIMLOCAL);
         } catch (Exception e) {
@@ -44,26 +64,63 @@ public class EmeraldApplicationCli {
             e.printStackTrace();
             return;
         }
+        System.out.println("PC ... SC: Established connection to smartcard.");
 
-        System.err.println("PC->SC: Sending example plaintext message to card.");
-        CommandAPDU command = new CommandAPDU(EmeraldProtocol.CLA_PLAINTEXT, 0x00, 0x00, 0x00);
-        ResponseAPDU response;
+        // ask user to enter PIN to command line
+        byte[] pin = requirePinInput();
+        System.out.println(String.format("PC       : Using PIN `%s`", Arrays.toString(pin)));
+
+
         try {
-            response = cardManager.transmit(command);
-        } catch (CardException e) {
-            System.err.println("Error: Could not communicate with the card.");
+            demoPlaintext();
+
+            // TODO we use static AES key until J-PAKE is implemented
+            secureChannelManager.setKey(aesKeyDevelopmentTODO); // TODO replace with J-PAKE
+
+            demoPasswordStorage();
+
+        } catch (CardException | EmProtocolError e) {
+            System.err.println("Error: Error in communication with the card.");
             System.err.println("Detailed info about this error:");
+            System.err.print(e.toString());
             e.printStackTrace();
             return;
         }
 
-        System.err.println("PC<-SC: Received response:");
-        System.out.println(Arrays.toString(response.getData()));
-
         System.out.println("Done.");
     }
 
-    public void connect(RunConfig.CARD_TYPE cardType) throws Exception {
+    private byte[] requirePinInput() {
+        byte[] pin = new byte[PIN_LENGTH];
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("PC       : Enter 4 digit PIN.");
+            String pinInput = scanner.next();
+            if (pinInput.length() != PIN_LENGTH) {
+                System.out.println("PC       : PIN length must be 4.");
+                continue;
+            }
+
+            // check if input pin contains only digits
+            if (!(Character.isDigit(pinInput.charAt(0))
+                && Character.isDigit(pinInput.charAt(1))
+                && Character.isDigit(pinInput.charAt(2))
+                && Character.isDigit(pinInput.charAt(3))
+            )) {
+                System.out.println("PC       : PIN must be 4 digits.");
+                continue;
+            }
+
+            // pin has valid format
+            for (int i = 0; i < PIN_LENGTH; i++) {
+                pin[i] = (byte) (pinInput.charAt(i) - '0');
+            }
+            break;
+        }
+        return pin;
+    }
+
+    void connect(RunConfig.CARD_TYPE cardType) throws Exception {
         RunConfig runConfig = RunConfig.getDefaultConfig();
         if (cardType == RunConfig.CARD_TYPE.PHYSICAL) {
             runConfig.setTestCardType(RunConfig.CARD_TYPE.PHYSICAL);
@@ -73,12 +130,17 @@ public class EmeraldApplicationCli {
             // already correctly installed. Simulate that this applet has been installed with
             // following PIN.
             byte[] simulatedPin = new byte[]{1, 2, 3, 4};
-
             byte[] installData = prepareParameterData(AID_BYTES, new byte[0], simulatedPin);
             runConfig.setAppletToSimulate(EmeraldApplet.class)
                 .setTestCardType(RunConfig.CARD_TYPE.JCARDSIMLOCAL)
                 .setbReuploadApplet(true)
                 .setInstallData(installData);
+
+            System.out.println("PC       : Selected communication with EmeraldApplet in a simulator.");
+            System.out.println(
+                String.format("PC       : Simulated applet was installed with PIN `%d %d %d %d`.",
+                    simulatedPin[0], simulatedPin[1], simulatedPin[2], simulatedPin[3]));
+
         }
 
         if (!cardManager.Connect(runConfig)) {
@@ -86,9 +148,165 @@ public class EmeraldApplicationCli {
         }
     }
 
-    public static void main(String[] args) {
-        final EmeraldApplicationCli cli = new EmeraldApplicationCli();
-        cli.run();
-        System.out.println("exit");
+    public void setPassword(byte passwordSlotId, String password) throws CardException, EmProtocolError {
+        System.out.println(String.format("PC --> SC: Set password `%s` to slot %d.",
+            password, passwordSlotId));
+
+        byte[] passwordBytes = password.getBytes();
+        byte[] plaintext = new byte[MESSAGE_LENGTH];
+        plaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_SET_PASSWORD;
+        plaintext[PASSWORD_SLOT_ID_OFFSET] = passwordSlotId;
+        plaintext[PASSWORD_LENGTH_OFFSET] = (byte) passwordBytes.length;
+        System.arraycopy(passwordBytes, 0, plaintext, PASSWORD_VALUE_OFFSET,
+            passwordBytes.length);
+
+        byte[] ciphertext = secureChannelManager.encrypt(plaintext);
+        CommandAPDU command = new CommandAPDU(CLA_ENCRYPTED, 0x00, 0x00, 0x00, ciphertext);
+
+        ResponseAPDU response = cardManager.transmit(command);
+        checkApduResponseStatus(response);
+
+
+        byte[] responsePlaintext = secureChannelManager.decrypt(response.getData());
+        // check responsePlaintext
+        if (responsePlaintext.length != MESSAGE_LENGTH) {
+            throw new EmProtocolError(
+                String.format("Incorrect length of plaintext, expected=%d, actual=%d",
+                    MESSAGE_LENGTH, responsePlaintext.length));
+        }
+        if (responsePlaintext[MESSAGE_TYPE_OFFSET] != MESSAGE_OK_SET) {
+            throw new EmProtocolError(
+                String.format("Unexpected message type, expected=%d (MESSAGE_OK_SET), actual=%d",
+                    MESSAGE_OK_SET, responsePlaintext[MESSAGE_TYPE_OFFSET]));
+        }
+
+        System.out.println(String.format("PC <== SC: Password successfully set to slot %d.",
+            passwordSlotId));
+    }
+
+    private void checkApduResponseStatus(ResponseAPDU responseAPDU) throws EmProtocolError {
+        if (responseAPDU == null) {
+            throw new EmProtocolError("Missing response.");
+        }
+        if (responseAPDU.getSW() != 0x9000) {
+            throw new EmProtocolError(
+                String.format("Unexpected response status 0x%04X.", responseAPDU.getSW()),
+                responseAPDU);
+        }
+    }
+
+    private void checkMessageResponse(byte[] response, byte messageLength, byte messageType,
+                                      byte passwordSlotId) throws EmProtocolError {
+        if (response.length != messageLength) {
+            throw new EmProtocolError(
+                String.format("Incorrect length of plaintext, expected=%d, actual=%d",
+                    messageLength, response.length));
+        }
+        if (response[MESSAGE_TYPE_OFFSET] != messageType) {
+            throw new EmProtocolError(
+                String.format("Unexpected message type, expected=%d, actual=%d",
+                    messageType, response[MESSAGE_TYPE_OFFSET]));
+        }
+        if (response[PASSWORD_SLOT_ID_OFFSET] != passwordSlotId) {
+            throw new EmProtocolError(
+                String.format("Unexpected password slot ID, expected=%d, actual=%d",
+                    passwordSlotId, response[PASSWORD_SLOT_ID_OFFSET]));
+        }
+
+    }
+
+    public String getPassword(byte passwordSlotId) throws CardException, EmProtocolError {
+        System.out.println(String.format("PC --> SC: Get password from slot %d.", passwordSlotId));
+
+        byte[] plaintext = new byte[MESSAGE_LENGTH];
+        plaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_GET_PASSWORD;
+        plaintext[PASSWORD_SLOT_ID_OFFSET] = passwordSlotId;
+
+        byte[] ciphertext = secureChannelManager.encrypt(plaintext);
+        CommandAPDU command = new CommandAPDU(CLA_ENCRYPTED, 0x00, 0x00, 0x00, ciphertext);
+        ResponseAPDU response = cardManager.transmit(command);
+
+        checkApduResponseStatus(response);
+
+        byte[] responsePlaintext = secureChannelManager.decrypt(response.getData());
+
+        checkMessageResponse(responsePlaintext, MESSAGE_LENGTH, MESSAGE_OK_GET, passwordSlotId);
+
+        byte[] retrievedPassword = Arrays.copyOfRange(responsePlaintext, PASSWORD_VALUE_OFFSET,
+            PASSWORD_VALUE_OFFSET + responsePlaintext[PASSWORD_LENGTH_OFFSET]);
+
+        String retrievedPasswordString = new String(retrievedPassword);
+
+        System.out.println(String.format("PC <== SC: Retrieved password `%s` from slot %d.",
+            retrievedPasswordString, passwordSlotId));
+        return retrievedPasswordString;
+    }
+
+    public void demoPlaintext() throws CardException {
+        System.out.println("##################################################");
+        System.out.println("Begin: demo plaintext");
+
+        System.out.println("PC --> SC: Sending example plaintext message to card.");
+        CommandAPDU command = new CommandAPDU(EmeraldProtocol.CLA_PLAINTEXT, 0x00, 0x00, 0x00);
+        ResponseAPDU response;
+        response = cardManager.transmit(command);
+
+        System.out.print("PC <== SC: Received response:");
+        System.out.println(Arrays.toString(response.getData()));
+
+        System.out.println("End: demo plaintext");
+        System.out.println("##################################################");
+    }
+
+    public void demoPasswordStorage() throws CardException, EmProtocolError {
+        System.out.println("##################################################");
+        System.out.println("Begin: demo password storage");
+
+        System.out.println();
+        setPassword((byte) 0, "All your");
+        System.out.println();
+        setPassword((byte) 1, "base are");
+        System.out.println();
+        setPassword((byte) 2, "belong to us");
+        System.out.println();
+        getPassword((byte) 2);
+        System.out.println();
+        getPassword((byte) 1);
+        System.out.println();
+        getPassword((byte) 0);
+        System.out.println();
+
+        System.out.println("End: demo password storage");
+        System.out.println("##################################################");
+    }
+
+
+    public void printBanner() {
+        System.out.print(
+            "\n" +
+                "    Emerald Password Manager for Smartcards\n" +
+                "  __\n" +
+                " (`/\\\n" +
+                " `=\\/\\ __...--~~~~~-._   _.-~~~~~--...__\n" +
+                "  `=\\/\\               \\ /               \\\\\n" +
+                "   `=\\/                V                 \\\\\n" +
+                "   //_\\___--~~~~~~-._  |  _.-~~~~~~--...__\\\\\n" +
+                "  //  ) (..----~~~~._\\ | /_.~~~~----.....__\\\\\n" +
+                " ===(     )==========\\\\|//====================\n" +
+                "     \\___/           `---`\n\n");
+    }
+
+    public class EmProtocolError extends Exception {
+        public final ResponseAPDU responseAPDU;
+
+        public EmProtocolError(String message, ResponseAPDU responseAPDU) {
+            super(message);
+            this.responseAPDU = responseAPDU;
+        }
+
+        public EmProtocolError(String message) {
+            super(message);
+            responseAPDU = null;
+        }
     }
 }

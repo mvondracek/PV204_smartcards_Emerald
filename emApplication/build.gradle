@@ -25,4 +25,8 @@ dependencies {
     compile project(':emCardTools')
 }
 
+run{
+    standardInput = System.in
+}
+
 mainClassName = 'emApplication.EmeraldApplicationCli'

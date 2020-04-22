@@ -62,6 +62,8 @@ public class EmeraldProtocol {
         (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
         (byte) 0x00, (byte) 0x00};
 
+    public static final byte PIN_LENGTH = (byte) 4;
+
     private EmeraldProtocol() {
         // Constant storage class
         throw new EmIllegalStateException();
