@@ -9,8 +9,12 @@ package jpake;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+
+import applet.EmIllegalArgumentException;
+import applet.EmIllegalStateException;
 import javacard.security.CryptoException;
 
+import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
@@ -23,12 +27,14 @@ between two children classes
 */
 public abstract class jpakeActor {
 
-    protected ECNamedCurveParameterSpec curvespec = ECNamedCurveTable.getParameterSpec("curve25519");
-    protected ECPoint G = curvespec.getG();   /*subgroup generator*/
-    protected BigInteger n = curvespec.getN(); /*order of subrgoup*/
-    protected BigInteger coFactor = curvespec.getH();
+    protected static ECNamedCurveParameterSpec curvespec = ECNamedCurveTable.getParameterSpec("curve25519");
+    protected static ECPoint G = curvespec.getG();   /*subgroup generator*/
+    protected static BigInteger n = curvespec.getN(); /*order of subrgoup*/
+    protected static BigInteger coFactor = curvespec.getH();
     protected byte[] userID;
     protected BigInteger pinKey;
+
+    public static ECCurve curve = curvespec.getCurve();
 
     protected BigInteger x1;
     protected BigInteger x2;
@@ -40,7 +46,16 @@ public abstract class jpakeActor {
 
     public jpakeActor(byte[] userID, byte[] pinKey){
         if(userID.length ==0 || pinKey.length == 0){
-            throw new CryptoException(CryptoException.ILLEGAL_VALUE);
+            throw new EmIllegalStateException();
+        }
+        //here we need to check that pin-derived key isn't all zero
+        //otherwise EC cryptomagic won't work
+        boolean isAllZero = true;
+        for( int i = 0; i < pinKey.length && isAllZero; ++i ){
+            if( pinKey[i] != 0 ) isAllZero = false;
+        }
+        if(isAllZero){
+            throw new EmIllegalArgumentException();
         }
         this.userID = userID;
         this.pinKey = new BigInteger(pinKey);

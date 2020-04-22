@@ -18,8 +18,8 @@ public final class jpakePassiveActor extends jpakeActor{
                               PS_SECOND_INCOMING_VERIFIED, PS_KEY_DERIVED
     }
 
-    public jpakePassiveActor(byte[] userID, byte[] pinKey){
-        super(userID, pinKey);
+    public jpakePassiveActor(byte[] uid, byte[] pinKey){
+        super(uid, pinKey);
         this.status = PASSIVE_STATUS.PS_INIT;
     }
 

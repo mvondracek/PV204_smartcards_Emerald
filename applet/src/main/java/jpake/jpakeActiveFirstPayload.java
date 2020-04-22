@@ -7,11 +7,15 @@ Team Emerald (in alphabetical order):
 
 package jpake;
 
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 
 import applet.ZKPPayload;
+import javacard.framework.Util;
 import javacard.security.CryptoException;
+import org.bouncycastle.jce.ECPointUtil;
 import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.Arrays;
 
 public final class jpakeActiveFirstPayload {
     private final byte[] senderID;
@@ -47,4 +51,116 @@ public final class jpakeActiveFirstPayload {
     public ZKPPayload getZKPx2() {
         return this.ZKPx2;
     }
+
+    public byte[] toBytes(){
+        //format:
+        byte[] encodedG1 = G1.getEncoded(false);
+        byte[] encodedG2 = G2.getEncoded(false);
+        byte[] publicA1Encoded = ZKPx1.getPublicA().getEncoded(false);
+        byte[] publicV1Encoded = ZKPx1.getPublicV().getEncoded(false);
+        byte[] result1 = ZKPx1.getResult().toByteArray();
+        byte[] publicA2Encoded = ZKPx2.getPublicA().getEncoded(false);
+        byte[] publicV2Encoded = ZKPx2.getPublicV().getEncoded(false);
+        byte[] result2 = ZKPx2.getResult().toByteArray();
+        byte[] output = new byte[(short)(1+senderID.length+1+encodedG1.length+1+
+                                         encodedG2.length+1+publicA1Encoded.length+1
+                                         +publicV1Encoded.length+1+result1.length+1+
+                                          publicA2Encoded.length+1+publicV2Encoded.length+1+result2.length)];
+        short currStart = 0;
+        // Using System.arrayCopy until exception bug with arrayCopyNonAtomic is fixed
+        output[currStart] = (byte)senderID.length;
+        currStart +=1;
+        System.arraycopy(senderID, (int)0, output, currStart, senderID.length);
+        currStart += senderID.length;
+        output[currStart] = (byte)encodedG1.length;
+        currStart += 1;
+        System.arraycopy(encodedG1, (int) 0, output, currStart, encodedG1.length);
+        //Util.arrayCopyNonAtomic(encodedG1, (short) 0, output, currStart,encodedG1.length);
+        currStart += encodedG1.length;
+        output[currStart] = (byte)encodedG2.length;
+        currStart += 1;
+        System.arraycopy(encodedG2, (int) 0, output, currStart, encodedG2.length);
+        //Util.arrayCopyNonAtomic(encodedG2, (short) 0, output, currStart,encodedG2.length);
+        currStart += encodedG2.length;
+        output[currStart] = (byte)publicA1Encoded.length;
+        currStart += 1;
+        System.arraycopy(publicA1Encoded, (int) 0, output, currStart, publicA1Encoded.length);
+        //Util.arrayCopyNonAtomic(publicA1Encoded, (short) 0, output, currStart,publicA1Encoded.length);
+        currStart += publicA1Encoded.length;
+        output[currStart] = (byte)publicV1Encoded.length;
+        currStart += 1;
+        System.arraycopy(publicV1Encoded, (int) 0, output, currStart, publicV1Encoded.length);
+        //Util.arrayCopyNonAtomic(publicV1Encoded, (short) 0, output, currStart,publicV1Encoded.length);
+        currStart += publicV1Encoded.length;
+        output[currStart] = (byte)result1.length;
+        currStart += 1;
+        System.arraycopy(result1, (int) 0, output, currStart, result1.length);
+        //Util.arrayCopyNonAtomic(result1, (short) 0, output, currStart,result1.length);
+        currStart += result1.length;
+        output[currStart] = (byte)publicA2Encoded.length;
+        currStart +=1;
+        System.arraycopy(publicA2Encoded, (int) 0, output, currStart, publicA2Encoded.length);
+        //Util.arrayCopyNonAtomic(publicA2Encoded, (short) 0, output, currStart,publicA2Encoded.length);
+        currStart += publicA2Encoded.length;
+        output[currStart] = (byte) publicV2Encoded.length;
+        currStart += 1;
+        System.arraycopy(publicV2Encoded, (int) 0, output, currStart, publicV2Encoded.length);
+        //Util.arrayCopyNonAtomic(publicV2Encoded, (short) 0, output, currStart,publicV2Encoded.length);
+        currStart += publicV2Encoded.length;
+        output[currStart] = (byte)result2.length;
+        currStart +=1;
+        System.arraycopy(result2, (int) 0, output, currStart, result2.length);
+        //Util.arrayCopyNonAtomic(result2, (short) 0, output, currStart,result2.length);
+        return output;
+    }
+
+    public static jpakeActiveFirstPayload fromBytes(byte[] input){
+
+        //replace all Array.copyOfRange to arrayCopyNonAtomic when fixed
+
+        short currStart = 0;
+        byte senderIDlen = input[currStart];
+        currStart += 1;
+        byte[] senderID = Arrays.copyOfRange(input,currStart,currStart+senderIDlen);
+        currStart += senderIDlen;
+        byte encG1len = input[currStart];
+        currStart += 1;
+      //  byte[] enc = Arrays.copyOfRange(input, currStart, currStart+encG1len);
+        ECPoint G1 = jpakeActor.curve.decodePoint(Arrays.copyOfRange(input, currStart, currStart+encG1len));
+        currStart += encG1len;
+        byte encG2len = input[currStart];
+        currStart += 1;
+        ECPoint G2 = jpakeActor.curve.decodePoint(Arrays.copyOfRange(input, currStart, currStart+encG2len));
+        currStart += encG2len;
+        byte pubA1len = input[currStart];
+        currStart += 1;
+        ECPoint publicA1 = jpakeActor.curve.decodePoint(Arrays.copyOfRange(input, currStart, currStart+pubA1len));
+        currStart += pubA1len;
+        byte pubV1len = input[currStart];
+        currStart += 1;
+        ECPoint publicV1 = jpakeActor.curve.decodePoint(Arrays.copyOfRange(input, currStart, currStart+pubV1len));
+        currStart += pubV1len;
+        byte result1len = input[currStart];
+        currStart += 1;
+        BigInteger result1 =  new BigInteger(Arrays.copyOfRange(input, currStart, currStart+result1len));
+        currStart += result1len;
+        byte pubA2len = input[currStart];
+        currStart += 1;
+        ECPoint publicA2 = jpakeActor.curve.decodePoint(Arrays.copyOfRange(input, currStart, currStart+pubA2len));
+        currStart += pubA2len;
+        byte pubV2len = input[currStart];
+        currStart += 1;
+        ECPoint publicV2 = jpakeActor.curve.decodePoint(Arrays.copyOfRange(input, currStart, currStart+pubV2len));
+        currStart += pubV2len;
+        byte result2len = input[currStart];
+        currStart += 1;
+        BigInteger result2 =  new BigInteger(Arrays.copyOfRange(input, currStart, currStart+result2len));
+        currStart += result2len;
+
+
+        ZKPPayload zkpx1 = new ZKPPayload(publicA1, publicV1, result1);
+        ZKPPayload zkpx2 = new ZKPPayload(publicA2, publicV2, result2);
+        return new jpakeActiveFirstPayload(senderID,G1,G2,zkpx1,zkpx2);
+    }
+
 }

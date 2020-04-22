@@ -19,14 +19,14 @@ public final class jpakeActiveActor extends jpakeActor {
         AS_INCOMING_VERIFIED, AS_SECOND_PAYLOAD_PREPARED, AS_KEY_DERIVED
     }
 
-    public jpakeActiveActor(byte[] userID, byte[] pinKey) {
-        super(userID, pinKey);
+    public jpakeActiveActor(byte[] uid, byte[] pinKey) {
+        super(uid, pinKey);
         this.status = ACTIVE_STATUS.AS_INIT;
     }
 
     public jpakeActiveFirstPayload prepareFirstPayload() {
         if(this.status != ACTIVE_STATUS.AS_INIT)
-            throw new CryptoException(CryptoException.INVALID_INIT);
+            throw new EmIllegalStateException();
 
         //creating two private keys in range [1, n-1]
         x1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
@@ -47,7 +47,7 @@ public final class jpakeActiveActor extends jpakeActor {
 
     public void verifyIncoming(jpakePassivePayload ppl) {
         if(this.status != ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED)
-            throw new CryptoException(CryptoException.INVALID_INIT);
+            throw new EmIllegalStateException();
         ZKPPayload zkp1 = ppl.getZKPx1();
         ZKPPayload zkp2 = ppl.getZKPx2();
         ZKPPayload zkp3 = ppl.getZKPx2s();
@@ -78,7 +78,7 @@ public final class jpakeActiveActor extends jpakeActor {
 
     public ECPoint computeCommonKey() {
         if(this.status != ACTIVE_STATUS.AS_SECOND_PAYLOAD_PREPARED)
-            throw new CryptoException(CryptoException.INVALID_INIT);
+            throw new EmIllegalStateException();
         ECPoint key = super.computeCommonKey();
         this.status = ACTIVE_STATUS.AS_KEY_DERIVED;
         return key;
