@@ -4,7 +4,6 @@ import javacard.framework.Util;
 import javacard.security.MessageDigest;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
-
 // todo if it is ok to use these
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -33,9 +32,9 @@ public class ZKPUtils {
         byte[] output = new byte[(short) (encodedG.length + encodedV.length +
                                  encodedA.length + userID.length)];
         short currStart = 0;
-        System.arraycopy(encodedG, (int)0, output, currStart, encodedG.length);
+        //System.arraycopy(encodedG, (int)0, output, currStart, encodedG.length);
         //TODO: arrayCopyNonAtomic throws UnsatisfiedLinkException - needs to be fixed
-        //Util.arrayCopyNonAtomic(encodedG, (short) 0, output, currStart, (short) encodedG.length);
+        Util.arrayCopyNonAtomic(encodedG, (short) 0, output, currStart, (short) encodedG.length);
         currStart += encodedG.length;
         System.arraycopy(encodedV, (int)0, output, currStart, encodedV.length);
         //Util.arrayCopyNonAtomic(encodedV, (short) 0, output, currStart, (short) encodedV.length);
