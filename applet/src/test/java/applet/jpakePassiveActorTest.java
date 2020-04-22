@@ -1,6 +1,5 @@
 package applet;
 
-import javacard.security.CryptoException;
 import jpake.jpakePassiveActor;
 import org.junit.Assert;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +20,7 @@ public class jpakePassiveActorTest {
             fail( "preparePassivePayload didn't thrown an exception");
         }
         catch (EmIllegalStateException ce){
-
+            assertTrue(true);
         }
 
     }
