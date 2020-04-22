@@ -76,9 +76,9 @@ public class ZKPUtils {
         BigInteger y = publicA.getYCoord().toBigInteger();
         BigInteger a = curve.getA().toBigInteger();
         BigInteger b = curve.getB().toBigInteger();
-        BigInteger lhs = y.multiply(y);
+        BigInteger lhs = y.pow(2);
         // y^2 = x^3 + ax + b
-        BigInteger rhs = (x.multiply(x).multiply(x)).add(a.multiply(x)).add(b);
+        BigInteger rhs = x.pow(3).add(a.multiply(x)).add(b);
 
         if(!lhs.equals(rhs)) {
             return false;
