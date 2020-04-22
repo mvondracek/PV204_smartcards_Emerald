@@ -64,34 +64,33 @@ public final class jpakeActiveSecondPayload {
 
     public static jpakeActiveSecondPayload fromBytes(byte[] input){
         short currStart = 0;
-        byte senderIDlen = input[currStart];
+        short senderIDlen = input[currStart];
         currStart += 1;
-
         byte[] senderID = new byte[senderIDlen];
-        Util.arrayCopyNonAtomic(input,currStart,senderID,(short)0,(short)senderIDlen);
+        Util.arrayCopyNonAtomic(input,currStart,senderID,(short)0,senderIDlen);
         currStart += senderIDlen;
-        byte encAlen = input[currStart];
+        short encAlen = input[currStart];
         currStart += 1;
         byte[] encA = new byte[encAlen];
-        Util.arrayCopyNonAtomic(input, currStart, encA, (short)0, (short)encAlen);
+        Util.arrayCopyNonAtomic(input, currStart, encA, (short)0, encAlen);
         ECPoint A = jpakeActor.curve.decodePoint(encA);
         currStart += encAlen;
-        byte encPublicAlen = input[currStart];
+        short encPublicAlen = input[currStart];
         currStart += 1;
         byte[] encPublicA = new byte[encPublicAlen];
-        Util.arrayCopyNonAtomic(input, currStart, encPublicA, (short)0, (short)encPublicAlen);
+        Util.arrayCopyNonAtomic(input, currStart, encPublicA, (short)0, encPublicAlen);
         ECPoint publicA = jpakeActor.curve.decodePoint(encPublicA);
         currStart += encPublicAlen;
-        byte encPublicVlen = input[currStart];
+        short encPublicVlen = input[currStart];
         currStart += 1;
         byte[] encPublicV = new byte[encPublicVlen];
-        Util.arrayCopyNonAtomic(input, currStart, encPublicV, (short)0, (short)encPublicVlen);
+        Util.arrayCopyNonAtomic(input, currStart, encPublicV, (short)0, encPublicVlen);
         ECPoint publicV = jpakeActor.curve.decodePoint(encPublicV);
         currStart += encPublicVlen;
-        byte encResultlen = input[currStart];
+        short encResultlen = input[currStart];
         currStart += 1;
         byte[] encResult = new byte[encResultlen];
-        Util.arrayCopyNonAtomic(input, currStart, encResult, (short)0, (short)encResultlen);
+        Util.arrayCopyNonAtomic(input, currStart, encResult, (short)0, encResultlen);
         BigInteger result = new BigInteger(encResult);
 
         ZKPPayload zkpx2s = new ZKPPayload(publicA, publicV, result);
