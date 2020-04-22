@@ -68,7 +68,7 @@ public class ZKPUtils {
         ECPoint Gxr = generator.multiply(result);
         ECPoint Axc = publicA.multiply(challenge);
 
-        if(!isValidPoint(publicA)) {
+        if(!publicA.isValid()) {
             return false;
         }
 
@@ -79,24 +79,5 @@ public class ZKPUtils {
 
         // V == G x [r] + A x [c]
         return publicV.equals(Gxr.add(Axc));
-    }
-
-    /**
-     * Checks if a point is a valid point on a curve
-     * source: https://stackoverflow.com/a/6664005
-     * @param point ECPoint to check
-     * @return true if point is a valid point on the curve
-     */
-    public static boolean isValidPoint(ECPoint point) {
-        ECCurve curve = point.getCurve();
-        BigInteger x = point.getXCoord().toBigInteger();
-        BigInteger y = point.getYCoord().toBigInteger();
-        BigInteger a = curve.getA().toBigInteger();
-        BigInteger b = curve.getB().toBigInteger();
-        BigInteger lhs = y.pow(2);
-        // y^2 = x^3 + ax + b
-        BigInteger rhs = x.pow(3).add(a.multiply(x)).add(b);
-
-        return lhs.equals(rhs);
     }
 }
