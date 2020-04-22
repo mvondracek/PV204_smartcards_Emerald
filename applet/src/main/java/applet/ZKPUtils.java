@@ -1,13 +1,13 @@
 package applet;
 
-import javacard.framework.Util;
-import javacard.security.MessageDigest;
-import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECFieldElement;
-import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.util.BigIntegers;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+
+import javacard.framework.Util;
+import javacard.security.MessageDigest;
+
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.BigIntegers;
 
 public class ZKPUtils {
     /**

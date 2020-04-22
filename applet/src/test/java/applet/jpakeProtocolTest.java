@@ -1,11 +1,8 @@
 package applet;
 
 import javacard.framework.Util;
-import javacard.security.CryptoException;
+
 import jpake.*;
-import org.bouncycastle.math.ec.ECPoint;
-import org.junit.Assert;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 

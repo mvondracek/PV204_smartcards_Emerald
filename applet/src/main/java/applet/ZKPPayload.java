@@ -1,8 +1,8 @@
 package applet;
 
-import org.bouncycastle.math.ec.ECPoint;
-
 import java.math.BigInteger;
+
+import org.bouncycastle.math.ec.ECPoint;
 
 public final class ZKPPayload {
     private final ECPoint publicA;

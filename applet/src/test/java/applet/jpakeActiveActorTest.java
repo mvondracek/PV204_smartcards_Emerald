@@ -1,12 +1,5 @@
 package applet;
 
-import jpake.jpakeActiveActor;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.math.ec.ECPoint;
-import org.junit.Assert;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 class jpakeActiveActorTest {

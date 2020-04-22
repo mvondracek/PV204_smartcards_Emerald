@@ -9,6 +9,7 @@ package applet;
 
 import javacard.security.AESKey;
 import javacard.security.KeyBuilder;
+
 import javacardx.crypto.Cipher;
 
 public class SecureChannelManager {
