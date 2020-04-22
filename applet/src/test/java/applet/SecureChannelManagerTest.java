@@ -8,7 +8,6 @@ Team Emerald (in alphabetical order):
 package applet;
 
 import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 

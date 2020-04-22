@@ -9,11 +9,8 @@ package jpake;
 
 import applet.EmIllegalArgumentException;
 import applet.EmIllegalStateException;
-
 import java.math.BigInteger;
-
 import javacard.security.MessageDigest;
-
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.ECCurve;

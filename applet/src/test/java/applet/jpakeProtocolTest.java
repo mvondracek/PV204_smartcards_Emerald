@@ -1,9 +1,7 @@
 package applet;
 
 import javacard.framework.Util;
-
 import jpake.*;
-
 import org.junit.jupiter.api.Test;
 
 class jpakeProtocolTest {

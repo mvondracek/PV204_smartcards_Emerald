@@ -4,10 +4,8 @@ import applet.EmIllegalStateException;
 import applet.SchnorrZKP;
 import applet.ZKPPayload;
 import applet.ZKPUtils;
-
 import java.math.BigInteger;
 import java.security.SecureRandom;
-
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
 

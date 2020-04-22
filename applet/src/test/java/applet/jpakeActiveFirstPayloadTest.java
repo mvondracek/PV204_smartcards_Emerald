@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import javacard.framework.SystemException;
 import javacard.framework.Util;
-
 import jpake.jpakeActiveFirstPayload;
-
 import org.junit.jupiter.api.Test;
 
 public class jpakeActiveFirstPayloadTest {

@@ -35,7 +35,6 @@ import applet.EmeraldApplet;
 import emcardtools.CardManager;
 import emcardtools.RunConfig;
 import emcardtools.Util;
-
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
