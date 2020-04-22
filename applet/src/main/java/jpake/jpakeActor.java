@@ -8,18 +8,15 @@ Team Emerald (in alphabetical order):
 package jpake;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
 
 import applet.EmIllegalArgumentException;
 import applet.EmIllegalStateException;
-import javacard.security.CryptoException;
 
 import javacard.security.MessageDigest;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.util.BigIntegers;
 
 /*
 Abstract class with common functionality for JPAKE protocol participants.
