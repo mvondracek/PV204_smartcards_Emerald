@@ -56,8 +56,8 @@ public final class jpakeActiveActor extends jpakeActor {
         BigInteger challenge3 = ZKPUtils.computeChallenge(G, zkp3.getPublicV(), zkp3.getPublicA(), ppl.getSenderID());
         boolean isx1ok = ZKPUtils.verify(zkp1.getPublicA(), G, zkp1.getPublicV(), coFactor, zkp1.getResult(), challenge1);
         boolean isx2ok = ZKPUtils.verify(zkp2.getPublicA(), G, zkp2.getPublicV(), coFactor, zkp2.getResult(), challenge2);
-        boolean isx3ok = ZKPUtils.verify(zkp3.getPublicA(), G, zkp3.getPublicV(), coFactor, zkp3.getResult(), challenge3);
-        if(!isx1ok || !isx2ok || !isx3ok){
+        boolean isx2sok = ZKPUtils.verify(zkp3.getPublicA(), G, zkp3.getPublicV(), coFactor, zkp3.getResult(), challenge3);
+        if(!isx1ok || !isx2ok || !isx2sok){
             throw new EmIllegalStateException();
         }
         this.G1_recv = ppl.getG1();

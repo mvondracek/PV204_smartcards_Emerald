@@ -3,8 +3,10 @@ package jpake;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+import applet.EmIllegalStateException;
 import applet.SchnorrZKP;
 import applet.ZKPPayload;
+import applet.ZKPUtils;
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
@@ -25,7 +27,15 @@ public final class jpakePassiveActor extends jpakeActor{
     {
         if(this.status != PASSIVE_STATUS.PS_INIT)
             throw new CryptoException(CryptoException.INVALID_INIT);
-        //TODO: passive verifies ZKP from active's first msg, if no, then throw exception
+        ZKPPayload zkpx1 = afpl.getZKPx1();
+        ZKPPayload zkpx2 = afpl.getZKPx2();
+        BigInteger challenge1 = ZKPUtils.computeChallenge(G, zkpx1.getPublicV(), zkpx1.getPublicA(), afpl.getSenderID());
+        BigInteger challenge2 = ZKPUtils.computeChallenge(G, zkpx2.getPublicV(), zkpx2.getPublicA(), afpl.getSenderID());
+        boolean isx1ok = ZKPUtils.verify(zkpx1.getPublicA(), G, zkpx1.getPublicV(), coFactor, zkpx1.getResult(), challenge1);
+        boolean isx2ok = ZKPUtils.verify(zkpx2.getPublicA(), G, zkpx2.getPublicV(), coFactor, zkpx2.getResult(), challenge2);
+        if(!isx1ok || !isx2ok){
+            throw new EmIllegalStateException();
+        }
         this.G1_recv = afpl.getG1();
         this.G2_recv = afpl.getG2();
         this.status = PASSIVE_STATUS.PS_FIRST_INCOMING_VERIFIED;
@@ -59,7 +69,12 @@ public final class jpakePassiveActor extends jpakeActor{
         if(this.status != PASSIVE_STATUS.PS_PASSIVE_PAYLOAD_PREPARED)
             throw new CryptoException(CryptoException.INVALID_INIT);
 
-        //TODO: verification of ZKP for active second payload, if not ok, throw an exception
+        ZKPPayload zkpx2s = aspl.getZKPx2s();
+        BigInteger challenge = ZKPUtils.computeChallenge(G, zkpx2s.getPublicV(), zkpx2s.getPublicA(), aspl.getSenderID());
+        boolean isx2sok = ZKPUtils.verify(zkpx2s.getPublicA(), G, zkpx2s.getPublicV(), coFactor, zkpx2s.getResult(), challenge);
+        if(!isx2sok){
+            throw new EmIllegalStateException();
+        }
         this.A_recv = aspl.getA();
         this.status = PASSIVE_STATUS.PS_SECOND_INCOMING_VERIFIED;
     }
