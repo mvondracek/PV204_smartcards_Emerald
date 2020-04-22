@@ -36,7 +36,7 @@ public class SchnorrZKPTest {
         BigInteger aliceChallenge = ZKPUtils.computeChallenge(G, aliceV, aliceA, aliceName);
 
         //bob verifies
-        assertTrue(ZKPUtils.verify(aliceA, G, aliceV, coFactor,aliceResult, aliceChallenge));
+        assertTrue(ZKPUtils.verify(aliceA, G, aliceV, coFactor, aliceResult, aliceChallenge));
     }
 
     @Test

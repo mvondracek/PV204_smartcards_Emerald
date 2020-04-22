@@ -2,6 +2,8 @@ package applet;
 
 import javacard.framework.Util;
 import javacard.security.MessageDigest;
+import org.bouncycastle.math.ec.ECCurve;
+import org.bouncycastle.math.ec.ECFieldElement;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
 import java.math.BigInteger;
@@ -69,17 +71,18 @@ public class ZKPUtils {
         // check if A is a valid point on the curve
         // source: https://stackoverflow.com/a/6664005
         // todo find a way to check it
-        /* ECCurve curveOfA = publicA.getCurve();
-        ECFieldElement xOfPublicA = publicA.getXCoord();
-        ECFieldElement yOfPublicA = publicA.getYCoord();
-        ECFieldElement a = curveOfA.getA();
-        ECFieldElement b = curveOfA.getB();
-        ECFieldElement lhs = yOfPublicA.multiply(xOfPublicA);
-        ECFieldElement rhs = xOfPublicA.multiply(xOfPublicA)
-            .multiply(xOfPublicA).add(a.multiply(xOfPublicA)).add(b);
+        ECCurve curve = publicA.getCurve();
+        BigInteger x = publicA.getXCoord().toBigInteger();
+        BigInteger y = publicA.getYCoord().toBigInteger();
+        BigInteger a = curve.getA().toBigInteger();
+        BigInteger b = curve.getB().toBigInteger();
+        BigInteger lhs = y.multiply(y);
+        // y^2 = x^3 + ax + b
+        BigInteger rhs = (x.multiply(x).multiply(x)).add(a.multiply(x)).add(b);
+
         if(!lhs.equals(rhs)) {
             return false;
-        }*/
+        }
 
         // check if A is not on point of infinity
         if (Axh.isInfinity()) {
