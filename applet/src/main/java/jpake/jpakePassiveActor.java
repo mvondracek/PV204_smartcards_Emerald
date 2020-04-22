@@ -51,7 +51,7 @@ public final class jpakePassiveActor extends jpakeActor{
         ZKPPayload zkpx2s = new ZKPPayload(szkpx2s.getPublicA(), szkpx2s.getPublicV(),szkpx2s.getResult());
 
         this.status = PASSIVE_STATUS.PS_PASSIVE_PAYLOAD_PREPARED;
-        return new jpakePassivePayload(G1,G2,B,zkpx1,zkpx2,zkpx2s);
+        return new jpakePassivePayload(this.userID, G1,G2,B,zkpx1,zkpx2,zkpx2s);
     }
 
     public void verifySecondIncoming(jpakeActiveSecondPayload aspl)

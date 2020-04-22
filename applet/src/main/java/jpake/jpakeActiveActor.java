@@ -3,8 +3,10 @@ package jpake;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+import applet.EmIllegalStateException;
 import applet.SchnorrZKP;
 import applet.ZKPPayload;
+import applet.ZKPUtils;
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
@@ -40,13 +42,24 @@ public final class jpakeActiveActor extends jpakeActor {
         SchnorrZKP szkpx2 = new SchnorrZKP(G, n, coFactor, x2, this.userID);
         ZKPPayload zkpx2 = new ZKPPayload(szkpx2.getPublicA(), szkpx2.getPublicV(),szkpx2.getResult());
         this.status = ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED;
-        return new jpakeActiveFirstPayload(G1, G2, zkpx1, zkpx2);
+        return new jpakeActiveFirstPayload(this.userID, G1, G2, zkpx1, zkpx2);
     }
 
     public void verifyIncoming(jpakePassivePayload ppl) {
         if(this.status != ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED)
             throw new CryptoException(CryptoException.INVALID_INIT);
-        //TODO: verification of ZKP sent by passive, if failed, throw an exception
+        ZKPPayload zkp1 = ppl.getZKPx1();
+        ZKPPayload zkp2 = ppl.getZKPx2();
+        ZKPPayload zkp3 = ppl.getZKPx2s();
+        BigInteger challenge1 = ZKPUtils.computeChallenge(G, zkp1.getPublicV(), zkp1.getPublicA(), ppl.getSenderID());
+        BigInteger challenge2 = ZKPUtils.computeChallenge(G, zkp2.getPublicV(), zkp2.getPublicA(), ppl.getSenderID());
+        BigInteger challenge3 = ZKPUtils.computeChallenge(G, zkp3.getPublicV(), zkp3.getPublicA(), ppl.getSenderID());
+        boolean isx1ok = ZKPUtils.verify(zkp1.getPublicA(), G, zkp1.getPublicV(), coFactor, zkp1.getResult(), challenge1);
+        boolean isx2ok = ZKPUtils.verify(zkp2.getPublicA(), G, zkp2.getPublicV(), coFactor, zkp2.getResult(), challenge2);
+        boolean isx3ok = ZKPUtils.verify(zkp3.getPublicA(), G, zkp3.getPublicV(), coFactor, zkp3.getResult(), challenge3);
+        if(!isx1ok || !isx2ok || !isx3ok){
+            throw new EmIllegalStateException();
+        }
         this.G1_recv = ppl.getG1();
         this.G2_recv = ppl.getG2();
         this.A_recv = ppl.getA();
@@ -60,7 +73,7 @@ public final class jpakeActiveActor extends jpakeActor {
         SchnorrZKP szkpx2s = new SchnorrZKP(G, n, coFactor, x2.multiply(pinKey).mod(n), this.userID);
         ZKPPayload zkpx2s = new ZKPPayload(szkpx2s.getPublicA(), szkpx2s.getPublicV(),szkpx2s.getResult());
         this.status = ACTIVE_STATUS.AS_SECOND_PAYLOAD_PREPARED;
-        return new jpakeActiveSecondPayload(A, zkpx2s);
+        return new jpakeActiveSecondPayload(this.userID, A, zkpx2s);
     }
 
     public ECPoint computeCommonKey() {

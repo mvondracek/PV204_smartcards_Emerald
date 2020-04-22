@@ -14,20 +14,25 @@ import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
 
 public final class jpakeActiveFirstPayload {
+    private final byte[] senderID;
     private final ECPoint G1;
     private final ECPoint G2;
     private final ZKPPayload ZKPx1;
     private final ZKPPayload ZKPx2;
 
-    public jpakeActiveFirstPayload(ECPoint G1, ECPoint G2, ZKPPayload ZKPx1, ZKPPayload ZKPx2){
+    public jpakeActiveFirstPayload(byte[] id, ECPoint G1, ECPoint G2, ZKPPayload ZKPx1, ZKPPayload ZKPx2){
         if(G1 == null || G2 == null || ZKPx1 == null || ZKPx2 == null){
             throw new CryptoException(CryptoException.ILLEGAL_VALUE);
         }
-
+        senderID = id;
         this.G1 = G1;
         this.G2 = G2;
         this.ZKPx1 = ZKPx1;
         this.ZKPx2 = ZKPx2;
+    }
+
+    public byte[] getSenderID() {
+        return this.senderID;
     }
 
     public ECPoint getG1() {
