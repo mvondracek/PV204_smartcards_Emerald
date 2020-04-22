@@ -4,7 +4,6 @@ import javacard.framework.Util;
 import javacard.security.MessageDigest;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
-// todo if it is ok to use these
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
@@ -15,13 +14,10 @@ public class ZKPUtils {
     public static BigInteger computeChallenge (ECPoint G, ECPoint V, ECPoint A, byte[] userID) {
         byte[] concatKey = concatenatePublic(G, V, A, userID);
         BigInteger output;
-
-        // todo select appropriate hash function
         MessageDigest dig = MessageDigest.getInstance(MessageDigest.ALG_SHA_512, false);
         byte[] outputBytes = new byte[dig.getLength()];
         dig.doFinal(concatKey, (short) 0, (short) concatKey.length, outputBytes, (short) 0);
         output = new BigInteger(outputBytes);
-
         return output;
     }
 
