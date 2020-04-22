@@ -29,4 +29,4 @@ run{
     standardInput = System.in
 }
 
-mainClassName = 'emApplication.EmeraldApplicationCli'
+mainClassName = 'emapplication.EmeraldApplicationCli'
