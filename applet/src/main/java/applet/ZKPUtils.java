@@ -15,7 +15,7 @@ public class ZKPUtils {
      * @param userID    (UserID in doc)
      * @return c = H(G || V || A || UserID || OtherInfo)
      */
-    public static BigInteger computeChallenge (ECPoint G, ECPoint V, ECPoint A, byte[] userID) {
+    public static BigInteger computeChallenge(ECPoint G, ECPoint V, ECPoint A, byte[] userID) {
         byte[] concatKey = concatenatePublic(G, V, A, userID);
         BigInteger output;
         MessageDigest dig = MessageDigest.getInstance(MessageDigest.ALG_SHA_512, false);
