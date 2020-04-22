@@ -32,9 +32,9 @@ SOFTWARE.
 package tests;
 
 import applet.EmeraldApplet;
-import cardTools.CardManager;
-import cardTools.RunConfig;
-import cardTools.Util;
+import emCardTools.CardManager;
+import emCardTools.RunConfig;
+import emCardTools.Util;
 
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;

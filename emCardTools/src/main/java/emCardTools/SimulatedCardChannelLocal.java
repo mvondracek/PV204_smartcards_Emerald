@@ -29,11 +29,15 @@ SOFTWARE.
 ~~~
 */
 
-package cardTools;
+package emCardTools;
 
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 
-import javax.smartcardio.*;
+import javax.smartcardio.Card;
+import javax.smartcardio.CardChannel;
+import javax.smartcardio.CardException;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
 import java.nio.ByteBuffer;
 
 /**
@@ -43,7 +47,7 @@ import java.nio.ByteBuffer;
 public class SimulatedCardChannelLocal extends CardChannel {
     JavaxSmartCardInterface m_simulator;
     SimulatedCard m_card;
-    
+
     SimulatedCardChannelLocal (JavaxSmartCardInterface simulator) {
         m_simulator = simulator;
         m_card = new SimulatedCard();
@@ -86,8 +90,8 @@ public class SimulatedCardChannelLocal extends CardChannel {
     public void close() throws CardException {
         m_simulator.reset();
     }
-    
-    
+
+
     private static void log(CommandAPDU cmd) {
         System.out.printf("--> [%s] %s\n", Util.toHex(cmd.getBytes()), cmd.getBytes().length);
     }
@@ -108,5 +112,5 @@ public class SimulatedCardChannelLocal extends CardChannel {
 
     private static void log(ResponseAPDU response) {
         log(response, 0);
-    }    
+    }
 }

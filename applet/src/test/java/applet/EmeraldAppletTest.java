@@ -6,12 +6,11 @@ Team Emerald (in alphabetical order):
  */
 package applet;
 
-import cardTools.Util;
 import javacard.framework.ISOException;
+import emCardTools.Util;
+import static emCardTools.Util.prepareParameterData;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-
-import static cardTools.Util.prepareParameterData;
 
 
 /**
