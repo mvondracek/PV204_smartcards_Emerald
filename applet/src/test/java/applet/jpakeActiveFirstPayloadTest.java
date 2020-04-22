@@ -1,11 +1,8 @@
 package applet;
 
-import java.math.BigInteger;
-import applet.ZKPPayload;
 import javacard.framework.SystemException;
 import javacard.framework.Util;
 import jpake.jpakeActiveFirstPayload;
-import org.bouncycastle.math.ec.ECPoint;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
