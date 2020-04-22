@@ -15,7 +15,7 @@ public class SchnorrZKP {
     private ECPoint publicV;
 
     /**
-     *
+     * The Alice's part of the SchnorrZKP is done here.
      * @param generator         (G in doc) a base point on the curve that serves as a generator
      * @param primeOrder        (n in doc) the order of generator
      * @param privateRandomKey  (a in doc) the private key chosen uniformly at random from [1, n-1]

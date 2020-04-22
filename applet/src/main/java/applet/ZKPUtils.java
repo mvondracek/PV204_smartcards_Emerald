@@ -9,6 +9,10 @@ import org.bouncycastle.util.BigIntegers;
 
 public class ZKPUtils {
     /**
+     * @param G         (G in doc) a base point on the curve that serves as a generator
+     * @param V         (V in doc) a public key, V = G x [v]
+     * @param A         (A in doc) Alice's public key A = G x [a]
+     * @param userID    (UserID in doc)
      * @return c = H(G || V || A || UserID || OtherInfo)
      */
     public static BigInteger computeChallenge (ECPoint G, ECPoint V, ECPoint A, byte[] userID) {
@@ -40,6 +44,7 @@ public class ZKPUtils {
     }
 
     /**
+     * Used to generate a random big integer in J-Pake and ZKP
      * @param primeOrder        (n in doc) the order of generator
      * @return a private key chosen uniformly at random from [1, n-1]
      */
