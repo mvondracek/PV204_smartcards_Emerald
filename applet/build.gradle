@@ -79,7 +79,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.1'
 
     jcardsim 'com.klinec:jcardsim:3.0.5.9'
-    
+
     // Include plugin as it has bundled GP & other tools.
     // Alternative: include GP manually, but the included
     // version has to be compatible with the plugin.
