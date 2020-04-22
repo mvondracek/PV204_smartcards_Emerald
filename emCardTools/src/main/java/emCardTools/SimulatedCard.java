@@ -29,7 +29,7 @@ SOFTWARE.
 ~~~
 */
 
-package emCardTools;
+package emcardtools;
 
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;

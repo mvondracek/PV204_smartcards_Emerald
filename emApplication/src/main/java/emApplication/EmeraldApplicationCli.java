@@ -5,7 +5,7 @@ Team Emerald (in alphabetical order):
 @mvondracek https://github.com/mvondracek
  */
 
-package emApplication;
+package emapplication;
 
 
 import applet.EmeraldApplet;
@@ -23,10 +23,10 @@ import static applet.EmeraldProtocol.PASSWORD_VALUE_OFFSET;
 import static applet.EmeraldProtocol.PIN_LENGTH;
 import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
 import applet.SecureChannelManager;
-import emCardTools.CardManager;
-import emCardTools.RunConfig;
-import emCardTools.Util;
-import static emCardTools.Util.prepareParameterData;
+import emcardtools.CardManager;
+import emcardtools.RunConfig;
+import emcardtools.Util;
+import static emcardtools.Util.prepareParameterData;
 
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -148,7 +148,8 @@ public class EmeraldApplicationCli {
         }
     }
 
-    public void setPassword(byte passwordSlotId, String password) throws CardException, EmProtocolError {
+    public void setPassword(byte passwordSlotId, String password)
+        throws CardException, EmProtocolError {
         System.out.println(String.format("PC --> SC: Set password `%s` to slot %d.",
             password, passwordSlotId));
 
@@ -165,7 +166,6 @@ public class EmeraldApplicationCli {
 
         ResponseAPDU response = cardManager.transmit(command);
         checkApduResponseStatus(response);
-
 
         byte[] responsePlaintext = secureChannelManager.decrypt(response.getData());
         // check responsePlaintext
@@ -184,19 +184,20 @@ public class EmeraldApplicationCli {
             passwordSlotId));
     }
 
-    private void checkApduResponseStatus(ResponseAPDU responseAPDU) throws EmProtocolError {
-        if (responseAPDU == null) {
+    private void checkApduResponseStatus(ResponseAPDU responseApdu) throws EmProtocolError {
+        if (responseApdu == null) {
             throw new EmProtocolError("Missing response.");
         }
-        if (responseAPDU.getSW() != 0x9000) {
+        if (responseApdu.getSW() != 0x9000) {
             throw new EmProtocolError(
-                String.format("Unexpected response status 0x%04X.", responseAPDU.getSW()),
-                responseAPDU);
+                String.format("Unexpected response status 0x%04X.", responseApdu.getSW()),
+                responseApdu);
         }
     }
 
     private void checkMessageResponse(byte[] response, byte messageLength, byte messageType,
-                                      byte passwordSlotId) throws EmProtocolError {
+                                      byte passwordSlotId)
+        throws EmProtocolError {
         if (response.length != messageLength) {
             throw new EmProtocolError(
                 String.format("Incorrect length of plaintext, expected=%d, actual=%d",
@@ -282,31 +283,30 @@ public class EmeraldApplicationCli {
 
 
     public void printBanner() {
-        System.out.print(
-            "\n" +
-                "    Emerald Password Manager for Smartcards\n" +
-                "  __\n" +
-                " (`/\\\n" +
-                " `=\\/\\ __...--~~~~~-._   _.-~~~~~--...__\n" +
-                "  `=\\/\\               \\ /               \\\\\n" +
-                "   `=\\/                V                 \\\\\n" +
-                "   //_\\___--~~~~~~-._  |  _.-~~~~~~--...__\\\\\n" +
-                "  //  ) (..----~~~~._\\ | /_.~~~~----.....__\\\\\n" +
-                " ===(     )==========\\\\|//====================\n" +
-                "     \\___/           `---`\n\n");
+        System.out.print("\n"
+            + "    Emerald Password Manager for Smartcards\n"
+            + "  __\n"
+            + " (`/\\\n"
+            + " `=\\/\\ __...--~~~~~-._   _.-~~~~~--...__\n"
+            + "  `=\\/\\               \\ /               \\\\\n"
+            + "   `=\\/                V                 \\\\\n"
+            + "   //_\\___--~~~~~~-._  |  _.-~~~~~~--...__\\\\\n"
+            + "  //  ) (..----~~~~._\\ | /_.~~~~----.....__\\\\\n"
+            + " ===(     )==========\\\\|//====================\n"
+            + "     \\___/           `---`\n\n");
     }
 
     public class EmProtocolError extends Exception {
-        public final ResponseAPDU responseAPDU;
+        public final ResponseAPDU responseApdu;
 
-        public EmProtocolError(String message, ResponseAPDU responseAPDU) {
+        public EmProtocolError(String message, ResponseAPDU responseApdu) {
             super(message);
-            this.responseAPDU = responseAPDU;
+            this.responseApdu = responseApdu;
         }
 
         public EmProtocolError(String message) {
             super(message);
-            responseAPDU = null;
+            responseApdu = null;
         }
     }
 }

@@ -29,7 +29,7 @@ SOFTWARE.
 ~~~
 */
 
-package emCardTools;
+package emcardtools;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

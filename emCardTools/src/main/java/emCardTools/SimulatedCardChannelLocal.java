@@ -29,7 +29,7 @@ SOFTWARE.
 ~~~
 */
 
-package emCardTools;
+package emcardtools;
 
 import com.licel.jcardsim.io.JavaxSmartCardInterface;
 

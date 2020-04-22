@@ -29,7 +29,7 @@ SOFTWARE.
 ~~~
 */
 
-package emCardTools;
+package emcardtools;
 
 /**
  * Applet run configuration.
