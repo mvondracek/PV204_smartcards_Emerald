@@ -7,16 +7,14 @@ Team Emerald (in alphabetical order):
 
 package jpake;
 
-import java.math.BigInteger;
-
 import applet.EmIllegalArgumentException;
 import applet.EmIllegalStateException;
-
+import java.math.BigInteger;
 import javacard.security.MessageDigest;
 import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.math.ec.ECPoint;
 
 /*
 Abstract class with common functionality for JPAKE protocol participants.
@@ -50,7 +48,7 @@ public abstract class jpakeActor {
         //otherwise EC cryptomagic won't work
         boolean isAllZero = true;
         for( int i = 0; i < pinKey.length && isAllZero; ++i ){
-            if( pinKey[i] != 0 ) isAllZero = false;
+            if( pinKey[i] != 0 ) {isAllZero = false;}
         }
         if(isAllZero){
             throw new EmIllegalArgumentException();

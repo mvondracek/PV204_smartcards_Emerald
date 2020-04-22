@@ -7,9 +7,11 @@ Team Emerald (in alphabetical order):
 
 package jpake;
 
+import applet.EmIllegalArgumentException;
+import applet.ZKPPayload;
 import java.math.BigInteger;
 
-import applet.ZKPPayload;
+import javacard.framework.SystemException;
 import javacard.framework.Util;
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
@@ -58,10 +60,10 @@ public final class jpakeActiveFirstPayload {
         byte[] publicA2Encoded = ZKPx2.getPublicA().getEncoded(false);
         byte[] publicV2Encoded = ZKPx2.getPublicV().getEncoded(false);
         byte[] result2 = ZKPx2.getResult().toByteArray();
-        byte[] output = new byte[(short)(1+senderID.length+1+encodedG1.length+1+
-                                         encodedG2.length+1+publicA1Encoded.length+1
-                                         +publicV1Encoded.length+1+result1.length+1+
-                                          publicA2Encoded.length+1+publicV2Encoded.length+1+result2.length)];
+        byte[] output = new byte[(short)(1+senderID.length+1+encodedG1.length+1
+                                         +encodedG2.length+1+publicA1Encoded.length+1
+                                         +publicV1Encoded.length+1+result1.length+1
+                                         +publicA2Encoded.length+1+publicV2Encoded.length+1+result2.length)];
         short currStart = 0;
         output[currStart] = (byte)senderID.length;
         currStart +=1;
@@ -101,8 +103,8 @@ public final class jpakeActiveFirstPayload {
         return output;
     }
 
-    public static jpakeActiveFirstPayload fromBytes(byte[] input){
-
+    public static jpakeActiveFirstPayload fromBytes(byte[] input) throws EmIllegalArgumentException, IllegalArgumentException, ArrayIndexOutOfBoundsException, NullPointerException, SystemException
+    {
         short currStart = 0;
         short senderIDlen = input[currStart];
         currStart += 1;
@@ -156,7 +158,9 @@ public final class jpakeActiveFirstPayload {
         byte[] encResult2 = new byte[result2len];
         Util.arrayCopyNonAtomic(input, currStart, encResult2, (short)0, result2len);
         BigInteger result2 =  new BigInteger(encResult2);
-
+        if(input.length != currStart+result2len){
+            throw new EmIllegalArgumentException();
+        }
         ZKPPayload zkpx1 = new ZKPPayload(publicA1, publicV1, result1);
         ZKPPayload zkpx2 = new ZKPPayload(publicA2, publicV2, result2);
         return new jpakeActiveFirstPayload(senderID,G1,G2,zkpx1,zkpx2);

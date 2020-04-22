@@ -1,12 +1,11 @@
 package jpake;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-
 import applet.EmIllegalStateException;
 import applet.SchnorrZKP;
 import applet.ZKPPayload;
 import applet.ZKPUtils;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
 
@@ -24,8 +23,9 @@ public final class jpakeActiveActor extends jpakeActor {
     }
 
     public jpakeActiveFirstPayload prepareFirstPayload() {
-        if(this.status != ACTIVE_STATUS.AS_INIT)
+        if(this.status != ACTIVE_STATUS.AS_INIT) {
             throw new EmIllegalStateException();
+        }
 
         //creating two private keys in range [1, n-1]
         x1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
@@ -44,8 +44,9 @@ public final class jpakeActiveActor extends jpakeActor {
     }
 
     public void verifyIncoming(jpakePassivePayload ppl) {
-        if(this.status != ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED)
+        if(this.status != ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED) {
             throw new EmIllegalStateException();
+        }
         ZKPPayload zkp1 = ppl.getZKPx1();
         ZKPPayload zkp2 = ppl.getZKPx2();
         ZKPPayload zkp3 = ppl.getZKPx2s();
@@ -65,8 +66,9 @@ public final class jpakeActiveActor extends jpakeActor {
     }
 
     public jpakeActiveSecondPayload prepareSecondPayload(){
-        if(this.status != ACTIVE_STATUS.AS_INCOMING_VERIFIED)
+        if(this.status != ACTIVE_STATUS.AS_INCOMING_VERIFIED) {
             throw new EmIllegalStateException();
+        }
         ECPoint A = G1.add(G1_recv.add(G2_recv)).multiply(x2.multiply(pinKey).mod(n));
         SchnorrZKP szkpx2s = new SchnorrZKP(G, n, coFactor, x2.multiply(pinKey).mod(n), this.userID);
         ZKPPayload zkpx2s = new ZKPPayload(szkpx2s.getPublicA(), szkpx2s.getPublicV(),szkpx2s.getResult());
@@ -75,8 +77,9 @@ public final class jpakeActiveActor extends jpakeActor {
     }
 
     public byte[] derivePlainCommonKey() {
-        if(this.status != ACTIVE_STATUS.AS_SECOND_PAYLOAD_PREPARED)
+        if(this.status != ACTIVE_STATUS.AS_SECOND_PAYLOAD_PREPARED) {
             throw new EmIllegalStateException();
+        }
         byte[] key = super.derivePlainCommonKey();
         this.status = ACTIVE_STATUS.AS_KEY_DERIVED;
         return key;

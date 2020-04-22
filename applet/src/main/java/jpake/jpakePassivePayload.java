@@ -2,7 +2,9 @@ package jpake;
 
 import java.math.BigInteger;
 
+import applet.EmIllegalArgumentException;
 import applet.ZKPPayload;
+import javacard.framework.SystemException;
 import javacard.framework.Util;
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
@@ -66,10 +68,10 @@ public final class jpakePassivePayload {
         byte[] publicV3Encoded = ZKPx2s.getPublicV().getEncoded(false);
         byte[] result3 = ZKPx2s.getResult().toByteArray();
 
-        byte[] output = new byte[(short)(1+senderID.length+1+encodedG1.length+1+
-                       encodedG2.length+1+encA.length+1+publicA1Encoded.length+1
-                       +publicV1Encoded.length+1+result1.length+1+
-                       publicA2Encoded.length+1+publicV2Encoded.length+1+result2.length+1
+        byte[] output = new byte[(short)(1+senderID.length+1+encodedG1.length+1
+                       +encodedG2.length+1+encA.length+1+publicA1Encoded.length+1
+                       +publicV1Encoded.length+1+result1.length+1
+                       +publicA2Encoded.length+1+publicV2Encoded.length+1+result2.length+1
                        +publicA3Encoded.length+1+publicV3Encoded.length+1+result3.length)];
 
         short currStart = 0;
@@ -126,7 +128,8 @@ public final class jpakePassivePayload {
         Util.arrayCopyNonAtomic(result3, (short) 0, output, currStart,(short)result3.length);
         return output;
     }
-    public static jpakePassivePayload fromBytes(byte[] input){
+    public static jpakePassivePayload fromBytes(byte[] input) throws EmIllegalArgumentException,IllegalArgumentException, ArrayIndexOutOfBoundsException, NullPointerException, SystemException
+    {
         short currStart = 0;
         short senderIDlen = input[currStart];
         currStart += 1;
@@ -204,7 +207,9 @@ public final class jpakePassivePayload {
         byte[] encResult3 = new byte[result3len];
         Util.arrayCopyNonAtomic(input, currStart, encResult3, (short)0, result3len);
         BigInteger result3 =  new BigInteger(encResult3);
-
+        if(input.length != currStart+result3len){
+            throw new EmIllegalArgumentException();
+        }
         ZKPPayload zkpx1 = new ZKPPayload(publicA1, publicV1, result1);
         ZKPPayload zkpx2 = new ZKPPayload(publicA2, publicV2, result2);
         ZKPPayload zkpx2s = new ZKPPayload(publicA3, publicV3, result3);

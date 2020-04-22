@@ -2,7 +2,9 @@ package jpake;
 
 import java.math.BigInteger;
 
+import applet.EmIllegalArgumentException;
 import applet.ZKPPayload;
+import javacard.framework.SystemException;
 import javacard.framework.Util;
 import javacard.security.CryptoException;
 import org.bouncycastle.math.ec.ECPoint;
@@ -36,8 +38,8 @@ public final class jpakeActiveSecondPayload {
         byte[] encPublicA = ZKPx2s.getPublicA().getEncoded(false);
         byte[] encPublicV = ZKPx2s.getPublicV().getEncoded(false);
         byte[] encResult = getZKPx2s().getResult().toByteArray();
-        byte[] output = new byte[(short)(1+senderID.length+1+encA.length+1+
-                                 encPublicA.length+1+encPublicV.length+1+encResult.length)];
+        byte[] output = new byte[(short)(1+senderID.length+1+encA.length+1
+                                 +encPublicA.length+1+encPublicV.length+1+encResult.length)];
         short currStart = 0;
         output[currStart] = (byte)senderID.length;
         currStart +=1;
@@ -61,7 +63,8 @@ public final class jpakeActiveSecondPayload {
         return output;
     }
 
-    public static jpakeActiveSecondPayload fromBytes(byte[] input){
+    public static jpakeActiveSecondPayload fromBytes(byte[] input) throws EmIllegalArgumentException,IllegalArgumentException, ArrayIndexOutOfBoundsException, NullPointerException, SystemException
+    {
         short currStart = 0;
         short senderIDlen = input[currStart];
         currStart += 1;
@@ -91,7 +94,9 @@ public final class jpakeActiveSecondPayload {
         byte[] encResult = new byte[encResultlen];
         Util.arrayCopyNonAtomic(input, currStart, encResult, (short)0, encResultlen);
         BigInteger result = new BigInteger(encResult);
-
+        if(input.length != currStart+encResultlen){
+            throw new EmIllegalArgumentException();
+        }
         ZKPPayload zkpx2s = new ZKPPayload(publicA, publicV, result);
         return new jpakeActiveSecondPayload(senderID, A, zkpx2s);
     }
