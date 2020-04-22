@@ -35,9 +35,9 @@ public final class jpakeActiveActor extends jpakeActor {
         G1 = G.multiply(x1);
         G2 = G.multiply(x2);
 
-        SchnorrZKP szkpx1 = new SchnorrZKP(G, n, coFactor, x1, this.userID);
+        SchnorrZKP szkpx1 = new SchnorrZKP(G, n, x1, this.userID);
         ZKPPayload zkpx1 = new ZKPPayload(szkpx1.getPublicA(), szkpx1.getPublicV(),szkpx1.getResult());
-        SchnorrZKP szkpx2 = new SchnorrZKP(G, n, coFactor, x2, this.userID);
+        SchnorrZKP szkpx2 = new SchnorrZKP(G, n, x2, this.userID);
         ZKPPayload zkpx2 = new ZKPPayload(szkpx2.getPublicA(), szkpx2.getPublicV(),szkpx2.getResult());
         this.status = ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED;
         return new jpakeActiveFirstPayload(this.userID, G1, G2, zkpx1, zkpx2);
@@ -70,7 +70,7 @@ public final class jpakeActiveActor extends jpakeActor {
             throw new EmIllegalStateException();
         }
         ECPoint A = G1.add(G1_recv.add(G2_recv)).multiply(x2.multiply(pinKey).mod(n));
-        SchnorrZKP szkpx2s = new SchnorrZKP(G, n, coFactor, x2.multiply(pinKey).mod(n), this.userID);
+        SchnorrZKP szkpx2s = new SchnorrZKP(G, n, x2.multiply(pinKey).mod(n), this.userID);
         ZKPPayload zkpx2s = new ZKPPayload(szkpx2s.getPublicA(), szkpx2s.getPublicV(),szkpx2s.getResult());
         this.status = ACTIVE_STATUS.AS_SECOND_PAYLOAD_PREPARED;
         return new jpakeActiveSecondPayload(this.userID, A, zkpx2s);

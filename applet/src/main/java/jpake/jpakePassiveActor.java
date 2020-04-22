@@ -54,11 +54,11 @@ public final class jpakePassiveActor extends jpakeActor{
         this.G2 = G.multiply(x2);
 
         ECPoint B = G1_recv.add(G2_recv.add(G1)).multiply(x2.multiply(pinKey).mod(n));
-        SchnorrZKP szkpx1 = new SchnorrZKP(G, n, coFactor, x1, this.userID);
+        SchnorrZKP szkpx1 = new SchnorrZKP(G, n, x1, this.userID);
         ZKPPayload zkpx1 = new ZKPPayload(szkpx1.getPublicA(), szkpx1.getPublicV(),szkpx1.getResult());
-        SchnorrZKP szkpx2 = new SchnorrZKP(G, n, coFactor, x2, this.userID);
+        SchnorrZKP szkpx2 = new SchnorrZKP(G, n, x2, this.userID);
         ZKPPayload zkpx2 = new ZKPPayload(szkpx2.getPublicA(), szkpx2.getPublicV(),szkpx2.getResult());
-        SchnorrZKP szkpx2s = new SchnorrZKP(G, n, coFactor, x2.multiply(pinKey).mod(n), this.userID);
+        SchnorrZKP szkpx2s = new SchnorrZKP(G, n, x2.multiply(pinKey).mod(n), this.userID);
         ZKPPayload zkpx2s = new ZKPPayload(szkpx2s.getPublicA(), szkpx2s.getPublicV(),szkpx2s.getResult());
 
         this.status = PASSIVE_STATUS.PS_PASSIVE_PAYLOAD_PREPARED;
