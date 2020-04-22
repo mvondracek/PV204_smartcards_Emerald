@@ -20,7 +20,6 @@ import static applet.EmeraldProtocol.PASSWORD_SLOT_ID_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_VALUE_OFFSET;
 import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
 import static emcardtools.Util.prepareParameterData;
-
 import applet.SecureChannelManager;
 import emcardtools.CardManager;
 import java.util.Arrays;

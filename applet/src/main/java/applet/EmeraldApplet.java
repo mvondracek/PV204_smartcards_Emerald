@@ -11,7 +11,6 @@ import static applet.EmeraldProtocol.CLA_ENCRYPTED;
 import static applet.EmeraldProtocol.CLA_PLAINTEXT;
 import static applet.EmeraldProtocol.PIN_LENGTH;
 import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
-
 import javacard.framework.APDU;
 import javacard.framework.Applet;
 import javacard.framework.ISO7816;
