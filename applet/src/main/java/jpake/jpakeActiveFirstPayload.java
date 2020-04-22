@@ -67,7 +67,7 @@ public final class jpakeActiveFirstPayload {
                                          +publicV1Encoded.length+1+result1.length+1+
                                           publicA2Encoded.length+1+publicV2Encoded.length+1+result2.length)];
         short currStart = 0;
-        // Using System.arrayCopy until exception bug with arrayCopyNonAtomic is fixed
+        //TODO: Using System.arrayCopy until exception bug with arrayCopyNonAtomic is fixed
         output[currStart] = (byte)senderID.length;
         currStart +=1;
         System.arraycopy(senderID, (int)0, output, currStart, senderID.length);
@@ -116,7 +116,7 @@ public final class jpakeActiveFirstPayload {
 
     public static jpakeActiveFirstPayload fromBytes(byte[] input){
 
-        //replace all Array.copyOfRange to arrayCopyNonAtomic when fixed
+        //TODO: replace all Array.copyOfRange to arrayCopyNonAtomic when fixed
 
         short currStart = 0;
         byte senderIDlen = input[currStart];
@@ -125,7 +125,6 @@ public final class jpakeActiveFirstPayload {
         currStart += senderIDlen;
         byte encG1len = input[currStart];
         currStart += 1;
-      //  byte[] enc = Arrays.copyOfRange(input, currStart, currStart+encG1len);
         ECPoint G1 = jpakeActor.curve.decodePoint(Arrays.copyOfRange(input, currStart, currStart+encG1len));
         currStart += encG1len;
         byte encG2len = input[currStart];
@@ -155,8 +154,6 @@ public final class jpakeActiveFirstPayload {
         byte result2len = input[currStart];
         currStart += 1;
         BigInteger result2 =  new BigInteger(Arrays.copyOfRange(input, currStart, currStart+result2len));
-        currStart += result2len;
-
 
         ZKPPayload zkpx1 = new ZKPPayload(publicA1, publicV1, result1);
         ZKPPayload zkpx2 = new ZKPPayload(publicA2, publicV2, result2);
