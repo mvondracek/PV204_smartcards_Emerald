@@ -17,6 +17,10 @@ public class SecureChannelManager {
     private final Cipher aesDecrypt;
 
     public SecureChannelManager() {
+        // NOTE: We cannot use AES-GCM as JCardSim does not support AEADCipher.ALG_AES_GCM. It
+        //       throws CryptoException with reason code CryptoException.NO_SUCH_ALGORITHM.
+        //       https://github.com/licel/jcardsim/issues/153
+
         // init AES cipher
         aesEncrypt = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
         aesDecrypt = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
