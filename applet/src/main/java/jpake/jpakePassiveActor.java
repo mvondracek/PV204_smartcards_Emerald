@@ -79,12 +79,12 @@ public final class jpakePassiveActor extends jpakeActor{
         this.status = PASSIVE_STATUS.PS_SECOND_INCOMING_VERIFIED;
     }
 
-    public ECPoint computeCommonKey()
+    public byte[] derivePlainCommonKey()
     {
         if(this.status != PASSIVE_STATUS.PS_SECOND_INCOMING_VERIFIED)
             throw new CryptoException(CryptoException.INVALID_INIT);
 
-        ECPoint key = super.computeCommonKey();
+        byte[] key = super.derivePlainCommonKey();
         this.status = PASSIVE_STATUS.PS_KEY_DERIVED;
         return key;
     }

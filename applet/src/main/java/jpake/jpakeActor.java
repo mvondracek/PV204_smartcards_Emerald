@@ -14,6 +14,7 @@ import applet.EmIllegalArgumentException;
 import applet.EmIllegalStateException;
 import javacard.security.CryptoException;
 
+import javacard.security.MessageDigest;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.jce.ECNamedCurveTable;
@@ -61,8 +62,18 @@ public abstract class jpakeActor {
         this.pinKey = new BigInteger(pinKey);
     }
 
-    public ECPoint computeCommonKey()
+    private ECPoint computeCommonKey()
     {
         return A_recv.subtract(G2_recv.multiply(x2.multiply(pinKey).mod(n))).multiply(x2);
+    }
+
+    public byte[] derivePlainCommonKey(){
+        ECPoint p = computeCommonKey();
+        byte[] pEncoded = p.getEncoded(false);
+        //will use SHA-256 instead of SHA-512 to avoid array copy operation
+        MessageDigest dig = MessageDigest.getInstance(MessageDigest.ALG_SHA_256, false);
+        byte[] outputBytes = new byte[dig.getLength()];
+        dig.doFinal(pEncoded, (short) 0, (short) pEncoded.length, outputBytes, (short) 0);
+        return outputBytes;
     }
 }

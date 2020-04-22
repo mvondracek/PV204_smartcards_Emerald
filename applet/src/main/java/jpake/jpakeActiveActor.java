@@ -76,10 +76,10 @@ public final class jpakeActiveActor extends jpakeActor {
         return new jpakeActiveSecondPayload(this.userID, A, zkpx2s);
     }
 
-    public ECPoint computeCommonKey() {
+    public byte[] derivePlainCommonKey() {
         if(this.status != ACTIVE_STATUS.AS_SECOND_PAYLOAD_PREPARED)
             throw new EmIllegalStateException();
-        ECPoint key = super.computeCommonKey();
+        byte[] key = super.derivePlainCommonKey();
         this.status = ACTIVE_STATUS.AS_KEY_DERIVED;
         return key;
     }

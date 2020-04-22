@@ -1,5 +1,6 @@
 package applet;
 
+import javacard.framework.Util;
 import javacard.security.CryptoException;
 import jpake.*;
 import org.bouncycastle.math.ec.ECPoint;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class jpakeProtocolTest {
     @Test
-    public void ifObtainedKeyIsTheSame() throws CryptoException{
+    public void ifObtainedKeyIsTheSame() throws EmIllegalStateException{
         byte[] auid = "Alice".getBytes();
         byte[] buid = "Bob".getBytes();
         byte[] pin_key = {1,1,1,1};
@@ -23,8 +24,8 @@ class jpakeProtocolTest {
         a.verifyIncoming(pp);
         jpakeActiveSecondPayload asp = a.prepareSecondPayload();
         b.verifySecondIncoming(asp);
-        ECPoint ckey_a = a.computeCommonKey();
-        ECPoint ckey_b = b.computeCommonKey();
-        if(!ckey_a.equals(ckey_b)) throw new CryptoException(CryptoException.ILLEGAL_VALUE);
+        byte[] pckey_a = a.derivePlainCommonKey();
+        byte[] pckey_b = b.derivePlainCommonKey();
+        if(Util.arrayCompare(pckey_a, (short)0, pckey_b, (short)0, (short)pckey_a.length) !=0) throw new EmIllegalStateException();
     }
 }
