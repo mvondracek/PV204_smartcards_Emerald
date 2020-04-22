@@ -9,6 +9,7 @@ package applet;
 
 import static applet.EmeraldProtocol.CLA_ENCRYPTED;
 import static applet.EmeraldProtocol.CLA_PLAINTEXT;
+import static applet.EmeraldProtocol.PIN_LENGTH;
 import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
 import javacard.framework.APDU;
 import javacard.framework.Applet;
@@ -19,8 +20,6 @@ import javacard.framework.MultiSelectable;
 import javacard.framework.Util;
 
 public class EmeraldApplet extends Applet implements MultiSelectable {
-    public static final byte PIN_LENGTH = 4;
-
     /**
      * Persistent PIN storage in EEPROM.
      * TODO `javacard.framework.OwnerPIN` is not suitable as we need to read PIN value for J-PAKE

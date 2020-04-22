@@ -66,3 +66,4 @@ simulator/build
 simulator/out
 tester/build
 tester/out
+emCardTools/build/tmp/jar/MANIFEST.MF
