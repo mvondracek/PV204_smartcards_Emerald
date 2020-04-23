@@ -11,4 +11,19 @@
 **Team** Emerald:
 [@OTristanF](https://github.com/OTristanF),
 [@lsolodkova](https://github.com/lsolodkova),
-[@mvondracek](https://github.com/mvondracek) (in alphabetical order). 
+[@mvondracek](https://github.com/mvondracek) (in alphabetical order).
+
+## Example computer application
+
+*Emerald Password Manager for Smartcards* can communicate with the applet on
+smartcard over secure channel. User needs to authenticate using PIN. The
+application allows a user to save passwords to password manager inside the
+card. Authenticated user can later retrieve saved passwords from the card.
+
+~~~batch
+.\gradlew.bat run -q --console=plain
+~~~
+
+~~~shell script
+./gradlew run -q --console=plain
+~~~

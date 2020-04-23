@@ -4,7 +4,6 @@ os: linux
 dist: xenial
 jdk:
   - openjdk8
-  - openjdk11
 env:
   global:
     - CC_TEST_REPORTER_ID=2ff901ea9f54de86ddb0b0c37b950e09a1a7958edcdf472230be713b5dad684b
@@ -16,7 +15,8 @@ before_script:
 script:
   # https://docs.travis-ci.com/user/languages/java/#projects-using-gradle
   - ./gradlew check --info --stacktrace
-  - ./gradlew buildJavaCard --info --stacktrace
+  # TODO removed while we use bouncycastle instead of JCMathlib which does not work now.
+  # - ./gradlew buildJavaCard --info --stacktrace
 after_script:
   - ./cc-test-reporter format-coverage applet/build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
   - ./cc-test-reporter upload-coverage
