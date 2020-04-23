@@ -91,4 +91,9 @@ public final class jpakePassiveActor extends jpakeActor{
         this.status = PASSIVE_STATUS.PS_KEY_DERIVED;
         return key;
     }
+
+    public void clearSessionData(){
+        super.clearSessionData();
+        this.status = PASSIVE_STATUS.PS_INIT;
+    }
 }

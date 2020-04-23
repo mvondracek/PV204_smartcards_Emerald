@@ -84,4 +84,9 @@ public final class jpakeActiveActor extends jpakeActor {
         this.status = ACTIVE_STATUS.AS_KEY_DERIVED;
         return key;
     }
+
+    public void clearSessionData(){
+        super.clearSessionData();
+        this.status = ACTIVE_STATUS.AS_INIT;
+    }
 }
