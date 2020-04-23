@@ -41,8 +41,8 @@ public class EmeraldApplicationCli {
     final CardManager cardManager;
     SecureChannelManagerOnComputer secureChannelManagerOnComputer;
 
-    public static final String uiErrorInComunication = "Error: Error in communication with the card.";
-    public static final String uiDetailedInfoAboutError = "Detailed info about this error:";
+    public static final String UI_ERROR_IN_COMMUNICATION = "Error: Error in communication with the card.";
+    public static final String UI_DETAILED_INFO_ABOUT_ERROR = "Detailed info about this error:";
 
 
     public EmeraldApplicationCli() {
@@ -85,19 +85,19 @@ public class EmeraldApplicationCli {
             demoPasswordStorage();
 
         } catch (CardException e) {
-            System.err.println(uiErrorInComunication);
-            System.err.println(uiDetailedInfoAboutError);
+            System.err.println(UI_ERROR_IN_COMMUNICATION);
+            System.err.println(UI_DETAILED_INFO_ABOUT_ERROR);
             e.printStackTrace();
             secureChannelManagerOnComputer.clearSessionData();
             return;
         }
         catch (EmProtocolError | EmeraldProtocolException e){
-            System.err.println(uiErrorInComunication);
+            System.err.println(UI_ERROR_IN_COMMUNICATION);
             System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             System.err.println("@ \"IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!\" @");
             System.err.println("@     PIN IS INCORRECT OR THIS SMARTCARD IS MALICIOUS     @");
             System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            System.err.println(uiDetailedInfoAboutError);
+            System.err.println(UI_DETAILED_INFO_ABOUT_ERROR);
             e.printStackTrace();
             secureChannelManagerOnComputer.clearSessionData();
             return;
