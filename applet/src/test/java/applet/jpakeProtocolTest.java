@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 class jpakeProtocolTest {
     @Test
     public void ifObtainedKeyIsTheSame() throws EmIllegalStateException{
@@ -49,7 +51,8 @@ class jpakeProtocolTest {
         b.verifySecondIncoming(asp);
         byte[] pckey_ab = a.derivePlainCommonKey();
         byte[] pckey_ba = b.derivePlainCommonKey();
-        if(Util.arrayCompare(pckey_ab, (short)0, pckey_ba, (short)0, (short)pckey_ab.length) !=0) throw new EmIllegalStateException();
+        Assert.assertArrayEquals(pckey_ab, pckey_ba);
+
         //reset first pair of actors
         a.clearSessionData();
         b.clearSessionData();
@@ -63,7 +66,8 @@ class jpakeProtocolTest {
         byte[] pckey_ad = a.derivePlainCommonKey();
         byte[] pckey_da = d.derivePlainCommonKey();
         //keys should be different
-        if(Util.arrayCompare(pckey_ad, (short)0, pckey_da, (short)0, (short)pckey_ad.length) == 0) throw new EmIllegalStateException();
+        assertFalse(Arrays.equals(pckey_ad, pckey_da));
+
         a.clearSessionData();
         d.clearSessionData();
         //active2 and passive1 test, PINs are different
@@ -76,7 +80,8 @@ class jpakeProtocolTest {
         byte[] pckey_cb = c.derivePlainCommonKey();
         byte[] pckey_bc = b.derivePlainCommonKey();
         //keys should be different
-        if(Util.arrayCompare(pckey_cb, (short)0, pckey_bc, (short)0, (short)pckey_cb.length) == 0) throw new EmIllegalStateException();
+        assertFalse(Arrays.equals(pckey_cb, pckey_bc));
+
         c.clearSessionData();
         b.clearSessionData();
         //establishing connection between Alice and Bob again, PINs are the same
@@ -89,8 +94,8 @@ class jpakeProtocolTest {
         byte[] pckey_ab2 = a.derivePlainCommonKey();
         byte[] pckey_ba2 = b.derivePlainCommonKey();
         //these keys must be identical
-        if(Util.arrayCompare(pckey_ab2, (short)0, pckey_ba2, (short)0, (short)pckey_ab2.length) !=0) throw new EmIllegalStateException();
+        Assert.assertArrayEquals(pckey_ab2, pckey_ba2);
         //but they must be different from the Alice-Bob first key
-        if(Util.arrayCompare(pckey_ab2, (short)0, pckey_ab, (short)0, (short)pckey_ab2.length) ==0) throw new EmIllegalStateException();
+        assertFalse(Arrays.equals(pckey_ab2, pckey_ab));
     }
 }
