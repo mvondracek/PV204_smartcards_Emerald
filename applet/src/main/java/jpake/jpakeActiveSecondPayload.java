@@ -63,6 +63,7 @@ public final class jpakeActiveSecondPayload {
         return output;
     }
 
+    // TODO all these exceptions should be catch and rethrown as EmIllegalArgumentException(cause)
     public static jpakeActiveSecondPayload fromBytes(byte[] input) throws EmIllegalArgumentException,IllegalArgumentException, ArrayIndexOutOfBoundsException, NullPointerException, SystemException
     {
         short currStart = 0;
