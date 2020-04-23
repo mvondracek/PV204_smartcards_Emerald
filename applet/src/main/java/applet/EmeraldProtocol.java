@@ -60,15 +60,6 @@ public class EmeraldProtocol {
      */
     public static final byte MESSAGE_OK_GET = (byte) 0x60;
 
-    // TODO we use static AES key until J-PAKE is implemented
-    public static final byte[] aesKeyDevelopmentTODO = new byte[]{ // TODO replace with J-PAKE
-        (byte) 0xFE, (byte) 0xED, (byte) 0xC0, (byte) 0xFF, (byte) 0xEE, (byte) 0x22,
-        (byte) 0xC0, (byte) 0xDE, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-        (byte) 0x00, (byte) 0x00, (byte) 0xFE, (byte) 0xED, (byte) 0xC0, (byte) 0xFF,
-        (byte) 0xEE, (byte) 0x22, (byte) 0xC0, (byte) 0xDE, (byte) 0x00, (byte) 0x00,
-        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-        (byte) 0x00, (byte) 0x00};
-
     public static final byte PIN_LENGTH = (byte) 4;
 
     private EmeraldProtocol() {

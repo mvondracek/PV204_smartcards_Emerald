@@ -12,13 +12,10 @@ import static applet.EmeraldProtocol.CLA_ENCRYPTED;
 import static applet.EmeraldProtocol.CLA_KEY_AGREEMENT;
 import static applet.EmeraldProtocol.CLA_PLAINTEXT;
 import static applet.EmeraldProtocol.PIN_LENGTH;
-import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
 import javacard.framework.APDU;
 import javacard.framework.Applet;
 import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
-import javacard.framework.JCSystem;
-import javacard.framework.MultiSelectable;
 import javacard.framework.Util;
 import javacardx.apdu.ExtendedLength;
 
@@ -213,7 +210,6 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
      * @see #deselect()
      */
     private void clearSessionData() {
-        // TODO overwrite session data in RAM with random data
         secureChannelManagerOnCard.clearSessionData();
     }
 }
