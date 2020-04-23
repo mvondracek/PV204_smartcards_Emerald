@@ -81,11 +81,20 @@ public class EmeraldApplicationCli {
 
             demoPasswordStorage();
 
-        } catch (CardException | EmProtocolError | EmeraldProtocolException e) {
+        } catch (CardException e) {
             System.err.println("Error: Error in communication with the card.");
             System.err.println("Detailed info about this error:");
             e.printStackTrace();
             return;
+        }
+        catch (EmProtocolError | EmeraldProtocolException e){
+            System.err.println("Error: Error in communication with the card.");
+            System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            System.err.println("@ \"IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!\" @");
+            System.err.println("@     PIN IS INCORRECT OR THIS SMARTCARD IS MALICIOUS     @");
+            System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            System.err.println("Detailed info about this error:");
+            e.printStackTrace();
         }
 
         System.out.println("Done.");
