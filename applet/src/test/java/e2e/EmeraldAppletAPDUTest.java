@@ -18,8 +18,7 @@ import static applet.EmeraldProtocol.PASSWORD_LENGTH_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_SLOTS_COUNT;
 import static applet.EmeraldProtocol.PASSWORD_SLOT_ID_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_VALUE_OFFSET;
-import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
-import applet.SecureChannelManager;
+import applet.SecureChannelManagerOnComputer;
 import emcardtools.CardManager;
 import static emcardtools.Util.prepareParameterData;
 import org.junit.Assert;
@@ -53,9 +52,10 @@ public class EmeraldAppletAPDUTest extends BaseTest {
     public void setSinglePassword() throws Exception {
         byte[] password = "mySuperSecretPassword".getBytes();
         for (byte passwordSlotId = 0; passwordSlotId < PASSWORD_SLOTS_COUNT; passwordSlotId++) {
-            final SecureChannelManager secureChannelManager = new SecureChannelManager();
-            // TODO we use static AES key until J-PAKE is implemented
-            secureChannelManager.setKey(aesKeyDevelopmentTODO); // TODO replace with J-PAKE
+            final CardManager cardManager = connect(PARAMETER_DATA);
+            final SecureChannelManagerOnComputer secureChannelManager = new SecureChannelManagerOnComputer(TEST_PIN, cardManager);
+
+            secureChannelManager.performKeyAgreement();
 
             byte[] plaintext = new byte[MESSAGE_LENGTH];
             plaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_SET_PASSWORD;
@@ -66,7 +66,7 @@ public class EmeraldAppletAPDUTest extends BaseTest {
             byte[] ciphertext = secureChannelManager.encrypt(plaintext);
             CommandAPDU command = new CommandAPDU(CLA_ENCRYPTED, 0x00, 0x00, 0x00, ciphertext);
 
-            final ResponseAPDU response = connect(PARAMETER_DATA).transmit(command);
+            final ResponseAPDU response = cardManager.transmit(command);
 
             Assert.assertNotNull(response);
             Assert.assertEquals(0x9000, response.getSW());
@@ -81,11 +81,12 @@ public class EmeraldAppletAPDUTest extends BaseTest {
     public void setGetSinglePassword() throws Exception {
         byte[] password = "mySuperSecretPassword".getBytes();
         for (byte passwordSlotId = 0; passwordSlotId < PASSWORD_SLOTS_COUNT; passwordSlotId++) {
-            //region set password
-            final SecureChannelManager secureChannelManager = new SecureChannelManager();
-            // TODO we use static AES key until J-PAKE is implemented
-            secureChannelManager.setKey(aesKeyDevelopmentTODO); // TODO replace with J-PAKE
+            final CardManager cardManager = connect(PARAMETER_DATA);
+            final SecureChannelManagerOnComputer secureChannelManager = new SecureChannelManagerOnComputer(TEST_PIN, cardManager);
 
+            secureChannelManager.performKeyAgreement();
+
+            //region set password
             byte[] plaintext = new byte[MESSAGE_LENGTH];
             plaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_SET_PASSWORD;
             plaintext[PASSWORD_SLOT_ID_OFFSET] = passwordSlotId;
@@ -95,7 +96,6 @@ public class EmeraldAppletAPDUTest extends BaseTest {
             byte[] ciphertext = secureChannelManager.encrypt(plaintext);
             CommandAPDU command = new CommandAPDU(CLA_ENCRYPTED, 0x00, 0x00, 0x00, ciphertext);
 
-            final CardManager cardManager = connect(PARAMETER_DATA);
             ResponseAPDU response = cardManager.transmit(command);
 
             Assert.assertNotNull(response);

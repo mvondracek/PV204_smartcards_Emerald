@@ -9,7 +9,14 @@ package applet;
 
 public class EmeraldProtocol {
     public static final byte CLA_PLAINTEXT = (byte) 0x01;
+    public static final byte CLA_KEY_AGREEMENT = (byte) 0xAA;
     public static final byte CLA_ENCRYPTED = (byte) 0xEE;
+
+    public static final byte INS_KEY_AGREEMENT_PC2SC_1 = (byte) 0x01;
+    public static final byte INS_KEY_AGREEMENT_PC2SC_2 = (byte) 0xEE;
+
+    public static final byte[] APDU_APPLET_BLOCKED = new byte[]{(byte) 0xDE, (byte) 0xAD,
+        (byte) 0xCA, (byte) 0x8D};
 
     public static final byte MESSAGE_HEADER_LENGTH = 3;
     public static final byte PASSWORD_SLOT_LENGTH = 29;
