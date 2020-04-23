@@ -1,0 +1,24 @@
+@startuml
+
+actor PC
+actor Card
+
+note over PC, Card: Parameters G, h, n\nShared secret s = H(PIN)
+
+== Three-Pass J-PAKE Over Elliptic Curve with SchnorrNIZKP ==
+note over PC : x1, x2 randomly from [1, n – 1]\nG1 = G x [x1],\nG2 = G x [x2],\nZKPs for x1 and x2 (A, V, result)
+PC -> Card: G1, G2, ZKPs for x1 and x2
+note right : ZKP verification
+note over Card : G3 = G x [x3],\nG4 = G x [x4],\nB = (G1 + G2 + G3) x [x4*s],\nZKPs for x3, x4, and x4*s
+Card -> PC: G3, G4, B, ZKPs for x3, x4, and x4*s
+note left : ZKP verification
+note over PC : A = (G1 + G3 + G4) x [x2 * s]\nZKP for x2*s
+PC -> Card: A, ZKP for x2*s
+note right : ZKP verification
+note over PC : Ka = (B – (G4 x [x2 * s])) x [x2] = Kb
+note over Card : Kb = (A – (G2 x [x4 * s])) x [x4] = Ka
+
+== Secure Channel Established ==
+PC <-> Card: IV || HMAC || EK ( hashchain || plaintext )
+
+@enduml
