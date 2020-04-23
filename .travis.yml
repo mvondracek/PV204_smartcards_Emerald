@@ -15,7 +15,7 @@ before_script:
 script:
   # https://docs.travis-ci.com/user/languages/java/#projects-using-gradle
   - ./gradlew check --info --stacktrace
-  # TODO removed while we use bouncycastle instead of JCMathlib which does not work now
+  # TODO removed while we use bouncycastle instead of JCMathlib which does not work now.
   # - ./gradlew buildJavaCard --info --stacktrace
 after_script:
   - ./cc-test-reporter format-coverage applet/build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
