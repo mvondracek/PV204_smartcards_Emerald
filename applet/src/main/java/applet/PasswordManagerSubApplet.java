@@ -39,14 +39,14 @@ public class PasswordManagerSubApplet {
         }
     }
 
-    public byte[] process(byte[] message) {
+    public byte[] process(byte[] message) throws EmeraldProtocolException {
         byte slotId = message[PASSWORD_SLOT_ID_OFFSET];
 
         if (!(0 <= slotId && slotId < PASSWORD_SLOTS_COUNT)) {
             // incorrect password slot
             // attacker is trying to communicate with incorrect PIN
-            // TODO count incorrect counter and consider blocking the card
-            return null;
+            // count incorrect counter and consider blocking the card
+            throw new EmeraldProtocolException();
         }
 
         byte[] responsePlaintext = new byte[32];
@@ -56,8 +56,8 @@ public class PasswordManagerSubApplet {
                     || message[PASSWORD_LENGTH_OFFSET] > PASSWORD_SLOT_LENGTH) {
                     // invalid password length
                     // attacker is trying to communicate with incorrect PIN
-                    // TODO count incorrect counter and consider blocking the card
-                    return null;
+                    // count incorrect counter and consider blocking the card
+                    throw new EmeraldProtocolException();
                 }
                 // set password to selected slot
                 userPasswordSlots[slotId].setPassword(message, PASSWORD_VALUE_OFFSET,
@@ -80,8 +80,8 @@ public class PasswordManagerSubApplet {
             default:
                 // incorrect message
                 // attacker is trying to communicate with incorrect PIN
-                // TODO count incorrect counter and consider blocking the card
-                return null;
+                // count incorrect counter and consider blocking the card
+                throw new EmeraldProtocolException();
         }
         return responsePlaintext;
     }

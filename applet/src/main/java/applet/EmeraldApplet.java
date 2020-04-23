@@ -12,34 +12,26 @@ import static applet.EmeraldProtocol.CLA_ENCRYPTED;
 import static applet.EmeraldProtocol.CLA_KEY_AGREEMENT;
 import static applet.EmeraldProtocol.CLA_PLAINTEXT;
 import static applet.EmeraldProtocol.PIN_LENGTH;
-import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
 import javacard.framework.APDU;
 import javacard.framework.Applet;
 import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
-import javacard.framework.JCSystem;
-import javacard.framework.MultiSelectable;
 import javacard.framework.Util;
 import javacardx.apdu.ExtendedLength;
 
 public class EmeraldApplet extends Applet implements ExtendedLength {
-    /**
-     * Persistent PIN storage in EEPROM.
-     * TODO `javacard.framework.OwnerPIN` is not suitable as we need to read PIN value for J-PAKE
-     */
-    private final byte[] pin; // TODO store pin securely
     private final SecureChannelManagerOnCard secureChannelManagerOnCard;
     private final PasswordManagerSubApplet passwordManagerSubApplet;
 
-    private final byte[] ramBuffer;
-
     /**
      * Signals whether this applet instance is blocked due to security alert counter depleted.
+     *
      * @see #securityAlertCountdown
      */
     private boolean isAppletBlocked = false;
     /**
      * When this field reaches 0, applet is blocked.
+     *
      * @see #isAppletBlocked
      */
     private byte securityAlertCountdown = 3;
@@ -76,13 +68,11 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
         }
 
         // create persistent pin in EEPROM
-        pin = new byte[PIN_LENGTH];
+        final byte[] pin = new byte[PIN_LENGTH];
         Util.arrayCopy(bArray, appletDataOffset, pin, (short) 0, PIN_LENGTH);
 
         // init SecureChannelManagerOnCard
         secureChannelManagerOnCard = new SecureChannelManagerOnCard(pin);
-
-        ramBuffer = JCSystem.makeTransientByteArray((short) 160, JCSystem.CLEAR_ON_DESELECT);
 
         passwordManagerSubApplet = new PasswordManagerSubApplet();
 
@@ -126,7 +116,7 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
             return;
         }
 
-        if(isAppletBlocked){
+        if (isAppletBlocked) {
             respondAppletBlocked(apdu);
         }
 
@@ -156,9 +146,8 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
                     short dataLength = apdu.setIncomingAndReceive();
                     final short offsetCommandData = apdu.getOffsetCdata();
                     // decrypt incoming message
-                    Util.arrayCopyNonAtomic(apduBuffer, offsetCommandData, ramBuffer, (short) 0,
-                        dataLength);
-                    byte[] plaintext = secureChannelManagerOnCard.decrypt(ramBuffer);
+                    byte[] plaintext = secureChannelManagerOnCard.decrypt(apduBuffer,
+                        offsetCommandData, dataLength);
 
                     // forward decrypted message to SubApplet
                     byte[] responsePlaintext = passwordManagerSubApplet.process(plaintext);
@@ -176,13 +165,14 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
                     break;
                 }
             }
-        }catch (EmeraldProtocolException e){
+        } catch (EmeraldProtocolException e) {
             // possible attack, security alert
             // decrement security alert countdown or block the card if countdown is depleted
-            if(securityAlertCountdown > 0){
+            if (securityAlertCountdown > 0) {
                 securityAlertCountdown--;
-            }
-            else {
+                // empty response
+                apdu.setOutgoingAndSend((short) 0, (short) 0);
+            } else {
                 isAppletBlocked = true;
                 respondAppletBlocked(apdu);
             }
@@ -190,11 +180,11 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
 
     }
 
-    public void respondAppletBlocked(APDU apdu){
+    public void respondAppletBlocked(APDU apdu) {
         byte[] apduBuffer = apdu.getBuffer();
-        Util.arrayCopyNonAtomic(APDU_APPLET_BLOCKED, (short)0, apduBuffer, (short)0,
+        Util.arrayCopyNonAtomic(APDU_APPLET_BLOCKED, (short) 0, apduBuffer, (short) 0,
             (short) APDU_APPLET_BLOCKED.length);
-        apdu.setOutgoingAndSend((short)0, (short) APDU_APPLET_BLOCKED.length);
+        apdu.setOutgoingAndSend((short) 0, (short) APDU_APPLET_BLOCKED.length);
     }
 
     @Override
@@ -219,7 +209,6 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
      * @see #deselect()
      */
     private void clearSessionData() {
-        // TODO overwrite session data in RAM with random data
         secureChannelManagerOnCard.clearSessionData();
     }
 }

@@ -37,12 +37,10 @@ import java.util.Scanner;
 public class EmeraldApplicationCli {
     public static final String AID = "0102030405060708090102";
     public static final byte[] AID_BYTES = Util.hexStringToByteArray(AID);
-
-    final CardManager cardManager;
-    SecureChannelManagerOnComputer secureChannelManagerOnComputer;
-
     public static final String UI_ERROR_IN_COMMUNICATION = "Error: Error in communication with the card.";
     public static final String UI_DETAILED_INFO_ABOUT_ERROR = "Detailed info about this error:";
+    final CardManager cardManager;
+    SecureChannelManagerOnComputer secureChannelManagerOnComputer;
 
 
     public EmeraldApplicationCli() {
@@ -92,8 +90,7 @@ public class EmeraldApplicationCli {
             e.printStackTrace();
             secureChannelManagerOnComputer.clearSessionData();
             return;
-        }
-        catch (EmProtocolError | EmeraldProtocolException e){
+        } catch (EmProtocolError | EmeraldProtocolException e) {
             System.err.println(UI_ERROR_IN_COMMUNICATION);
             System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             System.err.println("@ \"IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!\" @");
@@ -179,7 +176,7 @@ public class EmeraldApplicationCli {
     }
 
     public void setPassword(byte passwordSlotId, String password)
-        throws CardException, EmProtocolError {
+        throws CardException, EmProtocolError, EmeraldProtocolException {
         System.out.println(String.format("PC --> SC: Set password `%s` to slot %d.",
             password, passwordSlotId));
 
@@ -197,7 +194,8 @@ public class EmeraldApplicationCli {
         ResponseAPDU response = cardManager.transmit(command);
         checkApduResponseStatus(response);
 
-        byte[] responsePlaintext = secureChannelManagerOnComputer.decrypt(response.getData());
+        byte[] responsePlaintext = secureChannelManagerOnComputer.decrypt(response.getData(),
+            (short) 0, (short) response.getData().length);
         // check responsePlaintext
         if (responsePlaintext.length != MESSAGE_LENGTH) {
             throw new EmProtocolError(
@@ -246,7 +244,7 @@ public class EmeraldApplicationCli {
 
     }
 
-    public String getPassword(byte passwordSlotId) throws CardException, EmProtocolError {
+    public String getPassword(byte passwordSlotId) throws CardException, EmProtocolError, EmeraldProtocolException {
         System.out.println(String.format("PC --> SC: Get password from slot %d.", passwordSlotId));
 
         byte[] plaintext = new byte[MESSAGE_LENGTH];
@@ -259,7 +257,8 @@ public class EmeraldApplicationCli {
 
         checkApduResponseStatus(response);
 
-        byte[] responsePlaintext = secureChannelManagerOnComputer.decrypt(response.getData());
+        byte[] responsePlaintext = secureChannelManagerOnComputer.decrypt(response.getData(),
+            (short) 0, (short) response.getData().length);
 
         checkMessageResponse(responsePlaintext, MESSAGE_LENGTH, MESSAGE_OK_GET, passwordSlotId);
 
@@ -289,7 +288,7 @@ public class EmeraldApplicationCli {
         System.out.println("##################################################");
     }
 
-    public void demoPasswordStorage() throws CardException, EmProtocolError {
+    public void demoPasswordStorage() throws CardException, EmProtocolError, EmeraldProtocolException {
         System.out.println("##################################################");
         System.out.println("Begin: demo password storage");
 

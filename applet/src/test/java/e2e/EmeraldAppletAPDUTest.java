@@ -70,7 +70,7 @@ public class EmeraldAppletAPDUTest extends BaseTest {
             Assert.assertNotNull(response);
             Assert.assertEquals(0x9000, response.getSW());
 
-            byte[] responsePlaintext = secureChannelManager.decrypt(response.getData());
+            byte[] responsePlaintext = secureChannelManager.decrypt(response.getData(), (short)0, (short) response.getData().length);
             Assert.assertEquals(responsePlaintext.length, MESSAGE_LENGTH);
             Assert.assertEquals(responsePlaintext[MESSAGE_TYPE_OFFSET], MESSAGE_OK_SET);
         }
@@ -100,7 +100,7 @@ public class EmeraldAppletAPDUTest extends BaseTest {
             Assert.assertNotNull(response);
             Assert.assertEquals(0x9000, response.getSW());
 
-            byte[] responsePlaintext = secureChannelManager.decrypt(response.getData());
+            byte[] responsePlaintext = secureChannelManager.decrypt(response.getData(), (short)0, (short) response.getData().length);
             Assert.assertEquals(responsePlaintext.length, MESSAGE_LENGTH);
             Assert.assertEquals(responsePlaintext[MESSAGE_TYPE_OFFSET], MESSAGE_OK_SET);
             //endregion
@@ -117,7 +117,7 @@ public class EmeraldAppletAPDUTest extends BaseTest {
             Assert.assertNotNull(response);
             Assert.assertEquals(0x9000, response.getSW());
 
-            responsePlaintext = secureChannelManager.decrypt(response.getData());
+            responsePlaintext = secureChannelManager.decrypt(response.getData(), (short)0, (short) response.getData().length);
             Assert.assertEquals(responsePlaintext.length, MESSAGE_LENGTH);
             Assert.assertEquals(responsePlaintext[MESSAGE_TYPE_OFFSET], MESSAGE_OK_GET);
             Assert.assertEquals(responsePlaintext[PASSWORD_SLOT_ID_OFFSET], passwordSlotId);
