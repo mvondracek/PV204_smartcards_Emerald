@@ -28,7 +28,6 @@ public class SecureChannelManagerOnCard extends SecureChannelManagerBase {
 
     public SecureChannelManagerOnCard(byte[] pin) {
         super();
-        // TODO: hash pin?
         jpakePassiveActor = new jpakePassiveActor(jPakeUserId, pin);
     }
 
