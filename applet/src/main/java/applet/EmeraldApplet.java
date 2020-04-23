@@ -172,6 +172,8 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
             // decrement security alert countdown or block the card if countdown is depleted
             if(securityAlertCountdown > 0){
                 securityAlertCountdown--;
+                // empty response
+                apdu.setOutgoingAndSend((short) 0, (short) 0);
             }
             else {
                 isAppletBlocked = true;
