@@ -103,6 +103,7 @@ public final class jpakeActiveFirstPayload {
         return output;
     }
 
+    // TODO all these exceptions should be catch and rethrown as EmIllegalArgumentException(cause)
     public static jpakeActiveFirstPayload fromBytes(byte[] input) throws EmIllegalArgumentException, IllegalArgumentException, ArrayIndexOutOfBoundsException, NullPointerException, SystemException
     {
         short currStart = 0;

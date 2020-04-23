@@ -12,11 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-class SecureChannelManagerTest {
+class SecureChannelManagerOnCardTest {
+    private static final byte[] TEST_PIN = new byte[]{1, 2, 3, 4};
 
     @Test
     void testEncryptDecrypt() {
-        SecureChannelManager manager = new SecureChannelManager();
+        SecureChannelManagerOnCard manager = new SecureChannelManagerOnCard(TEST_PIN);
         byte[] testKey = new byte[]{
             (byte) 0xFE, (byte) 0xED, (byte) 0xC0, (byte) 0xFF, (byte) 0xEE, (byte) 0x22,
             (byte) 0xC0, (byte) 0xDE, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,

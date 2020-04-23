@@ -21,8 +21,8 @@ import static applet.EmeraldProtocol.PASSWORD_LENGTH_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_SLOT_ID_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_VALUE_OFFSET;
 import static applet.EmeraldProtocol.PIN_LENGTH;
-import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
-import applet.SecureChannelManager;
+import applet.EmeraldProtocolException;
+import applet.SecureChannelManagerOnComputer;
 import emcardtools.CardManager;
 import emcardtools.RunConfig;
 import emcardtools.Util;
@@ -39,12 +39,11 @@ public class EmeraldApplicationCli {
     public static final byte[] AID_BYTES = Util.hexStringToByteArray(AID);
 
     final CardManager cardManager;
-    final SecureChannelManager secureChannelManager;
+    SecureChannelManagerOnComputer secureChannelManagerOnComputer;
 
 
     public EmeraldApplicationCli() {
         cardManager = new CardManager(true, AID_BYTES);
-        secureChannelManager = new SecureChannelManager();
     }
 
     public static void main(String[] args) {
@@ -70,19 +69,21 @@ public class EmeraldApplicationCli {
         byte[] pin = requirePinInput();
         System.out.println(String.format("PC       : Using PIN `%s`", Arrays.toString(pin)));
 
+        secureChannelManagerOnComputer = new SecureChannelManagerOnComputer(pin, cardManager);
 
         try {
             demoPlaintext();
 
-            // TODO we use static AES key until J-PAKE is implemented
-            secureChannelManager.setKey(aesKeyDevelopmentTODO); // TODO replace with J-PAKE
+            System.out.println("PC <-> SC: Key agreement started.");
+            secureChannelManagerOnComputer.performKeyAgreement();
+            System.out.println("PC       : New shared session key established.");
+            System.out.println("PC <-> SC: Key agreement finished successfully.");
 
             demoPasswordStorage();
 
-        } catch (CardException | EmProtocolError e) {
+        } catch (CardException | EmProtocolError | EmeraldProtocolException e) {
             System.err.println("Error: Error in communication with the card.");
             System.err.println("Detailed info about this error:");
-            System.err.print(e.toString());
             e.printStackTrace();
             return;
         }
@@ -161,13 +162,13 @@ public class EmeraldApplicationCli {
         System.arraycopy(passwordBytes, 0, plaintext, PASSWORD_VALUE_OFFSET,
             passwordBytes.length);
 
-        byte[] ciphertext = secureChannelManager.encrypt(plaintext);
+        byte[] ciphertext = secureChannelManagerOnComputer.encrypt(plaintext);
         CommandAPDU command = new CommandAPDU(CLA_ENCRYPTED, 0x00, 0x00, 0x00, ciphertext);
 
         ResponseAPDU response = cardManager.transmit(command);
         checkApduResponseStatus(response);
 
-        byte[] responsePlaintext = secureChannelManager.decrypt(response.getData());
+        byte[] responsePlaintext = secureChannelManagerOnComputer.decrypt(response.getData());
         // check responsePlaintext
         if (responsePlaintext.length != MESSAGE_LENGTH) {
             throw new EmProtocolError(
@@ -223,13 +224,13 @@ public class EmeraldApplicationCli {
         plaintext[MESSAGE_TYPE_OFFSET] = MESSAGE_GET_PASSWORD;
         plaintext[PASSWORD_SLOT_ID_OFFSET] = passwordSlotId;
 
-        byte[] ciphertext = secureChannelManager.encrypt(plaintext);
+        byte[] ciphertext = secureChannelManagerOnComputer.encrypt(plaintext);
         CommandAPDU command = new CommandAPDU(CLA_ENCRYPTED, 0x00, 0x00, 0x00, ciphertext);
         ResponseAPDU response = cardManager.transmit(command);
 
         checkApduResponseStatus(response);
 
-        byte[] responsePlaintext = secureChannelManager.decrypt(response.getData());
+        byte[] responsePlaintext = secureChannelManagerOnComputer.decrypt(response.getData());
 
         checkMessageResponse(responsePlaintext, MESSAGE_LENGTH, MESSAGE_OK_GET, passwordSlotId);
 
@@ -280,7 +281,6 @@ public class EmeraldApplicationCli {
         System.out.println("End: demo password storage");
         System.out.println("##################################################");
     }
-
 
     public void printBanner() {
         System.out.print("\n"
