@@ -168,6 +168,9 @@ public class SecureChannelManagerBase {
             // key is not set
             throw new EmIllegalStateException();
         }
+        if(length == 0){
+            throw new EmeraldProtocolException();
+        }
         short currentOffset = offset;
         byte[] iv = Arrays.copyOfRange(ivAndHmacAndCiphertext, currentOffset,
             currentOffset + ALG_AES_CBC_ISO9797_M2_IV_SIZE);
