@@ -1,14 +1,13 @@
 package applet;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import javacard.framework.Util;
 import jpake.jpakeActiveSecondPayload;
 import jpake.jpakeKeyAgreementException;
 import jpake.jpakePassiveActor;
 import jpake.jpakePassivePayload;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class jpakeActiveSecondPayloadTest {
     @Test

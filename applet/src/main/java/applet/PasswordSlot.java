@@ -9,7 +9,6 @@ package applet;
 
 import javacard.framework.Util;
 
-
 /**
  * Slot for storing password.
  * Works as an array with fixed maximum size allocated in constructor. If stored password is shorter

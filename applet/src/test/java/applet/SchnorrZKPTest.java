@@ -1,14 +1,12 @@
 package applet;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import java.math.BigInteger;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigInteger;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class SchnorrZKPTest {
     // init curve
@@ -24,7 +22,7 @@ public class SchnorrZKPTest {
     @Test
     void testVerifyTrue() {
         BigInteger x1 = ZKPUtils.generateRandomBigInteger(n);
-        SchnorrZKP alice = new SchnorrZKP(G, n, coFactor, x1, aliceName);
+        SchnorrZKP alice = new SchnorrZKP(G, n, x1, aliceName);
 
         //bob gets get alice's public keys and ZKP result
         ECPoint aliceV = alice.getPublicV();
@@ -41,7 +39,7 @@ public class SchnorrZKPTest {
     @Test
     void testVerifyFalse() {
         BigInteger x1 = ZKPUtils.generateRandomBigInteger(n);
-        SchnorrZKP alice = new SchnorrZKP(G, n, coFactor, x1, aliceName);
+        SchnorrZKP alice = new SchnorrZKP(G, n, x1, aliceName);
 
         //bob gets get alice's public keys and ZKP result
         ECPoint aliceV = G; // this will make it false

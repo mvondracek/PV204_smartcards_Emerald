@@ -7,10 +7,9 @@ Team Emerald (in alphabetical order):
 
 package applet;
 
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
 
 class SecureChannelManagerOnCardTest {
     private static final byte[] TEST_PIN = new byte[]{1, 2, 3, 4};

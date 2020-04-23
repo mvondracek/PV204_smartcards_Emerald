@@ -18,16 +18,15 @@ import static applet.EmeraldProtocol.PASSWORD_LENGTH_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_SLOTS_COUNT;
 import static applet.EmeraldProtocol.PASSWORD_SLOT_ID_OFFSET;
 import static applet.EmeraldProtocol.PASSWORD_VALUE_OFFSET;
+import static emcardtools.Util.prepareParameterData;
 import applet.SecureChannelManagerOnComputer;
 import emcardtools.CardManager;
-import static emcardtools.Util.prepareParameterData;
+import java.util.Arrays;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import tests.BaseTest;
-
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
-import java.util.Arrays;
 
 
 /**

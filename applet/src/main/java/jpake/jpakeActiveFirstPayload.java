@@ -10,7 +10,6 @@ package jpake;
 import applet.EmIllegalArgumentException;
 import applet.ZKPPayload;
 import java.math.BigInteger;
-
 import javacard.framework.SystemException;
 import javacard.framework.Util;
 import javacard.security.CryptoException;

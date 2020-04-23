@@ -1,12 +1,11 @@
 package applet;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import javacard.framework.SystemException;
 import javacard.framework.Util;
 import jpake.jpakeActiveFirstPayload;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class jpakeActiveFirstPayloadTest {
 

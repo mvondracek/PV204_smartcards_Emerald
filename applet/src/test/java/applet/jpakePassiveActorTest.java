@@ -1,10 +1,7 @@
 package applet;
 
-import jpake.jpakePassiveActor;
-import org.junit.Assert;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-
 
 public class jpakePassiveActorTest {
 

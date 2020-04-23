@@ -1,5 +1,7 @@
 package applet;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.Arrays;
 import javacard.framework.Util;
 import jpake.jpakeActiveFirstPayload;
 import jpake.jpakeActiveSecondPayload;
@@ -7,10 +9,7 @@ import jpake.jpakeKeyAgreementException;
 import jpake.jpakePassiveActor;
 import jpake.jpakePassivePayload;
 import org.junit.Assert;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
 
 class jpakeProtocolTest {
     @Test

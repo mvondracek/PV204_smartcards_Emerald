@@ -1,15 +1,9 @@
 package applet;
 
-import org.bouncycastle.math.ec.ECPoint;
 import java.math.BigInteger;
+import org.bouncycastle.math.ec.ECPoint;
 
 public class SchnorrZKP {
-
-    // (G in doc) a base point on the curve that serves as a generator
-    private ECPoint generator;
-
-    // (h in doc) the coFactor of the subgroup, which is usually a small integer up to 4
-    private BigInteger coFactor;
 
     // r = v – (a * c) mod n
     private BigInteger result;
@@ -20,23 +14,17 @@ public class SchnorrZKP {
     // (V in doc) a public key, V = G x [v]
     private ECPoint publicV;
 
-    // User ID used for challenge. The other party knows this
-    // (a computer knows that it is communicating with a card)
-
     /**
-     *
+     * The Alice's part of the SchnorrZKP is done here.
      * @param generator         (G in doc) a base point on the curve that serves as a generator
      * @param primeOrder        (n in doc) the order of generator
-     * @param coFactor          (h in doc) the coFactor of the subgroup
      * @param privateRandomKey  (a in doc) the private key chosen uniformly at random from [1, n-1]
+     * @param userID            (UserID in doc) User ID used for challenge
      */
     public SchnorrZKP(ECPoint generator,
                       BigInteger primeOrder,
-                      BigInteger coFactor,
                       BigInteger privateRandomKey,
                       byte[] userID) {
-        this.generator = generator;
-        this.coFactor = coFactor;
 
         // In the setup of the scheme, Alice publishes her public key A = G x [a], where
         // a is the private key chosen uniformly at random from [1, n-1] (step of J-PAKE)

@@ -1,27 +1,27 @@
 package applet;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import javacard.framework.Util;
 import javacard.security.MessageDigest;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.BigIntegers;
-// todo if it is ok to use these
-import java.math.BigInteger;
-import java.security.SecureRandom;
 
 public class ZKPUtils {
     /**
+     * @param G         (G in doc) a base point on the curve that serves as a generator
+     * @param V         (V in doc) a public key, V = G x [v]
+     * @param A         (A in doc) Alice's public key A = G x [a]
+     * @param userID    (UserID in doc)
      * @return c = H(G || V || A || UserID || OtherInfo)
      */
-    public static BigInteger computeChallenge (ECPoint G, ECPoint V, ECPoint A, byte[] userID) {
+    public static BigInteger computeChallenge(ECPoint G, ECPoint V, ECPoint A, byte[] userID) {
         byte[] concatKey = concatenatePublic(G, V, A, userID);
         BigInteger output;
-
-        // todo select appropriate hash function
         MessageDigest dig = MessageDigest.getInstance(MessageDigest.ALG_SHA_512, false);
         byte[] outputBytes = new byte[dig.getLength()];
         dig.doFinal(concatKey, (short) 0, (short) concatKey.length, outputBytes, (short) 0);
         output = new BigInteger(outputBytes);
-
         return output;
     }
 
@@ -44,6 +44,7 @@ public class ZKPUtils {
     }
 
     /**
+     * Used to generate a random big integer in J-Pake and ZKP
      * @param primeOrder        (n in doc) the order of generator
      * @return a private key chosen uniformly at random from [1, n-1]
      */
@@ -70,20 +71,9 @@ public class ZKPUtils {
         ECPoint Gxr = generator.multiply(result);
         ECPoint Axc = publicA.multiply(challenge);
 
-        // check if A is a valid point on the curve
-        // source: https://stackoverflow.com/a/6664005
-        // todo find a way to check it
-        /* ECCurve curveOfA = publicA.getCurve();
-        ECFieldElement xOfPublicA = publicA.getXCoord();
-        ECFieldElement yOfPublicA = publicA.getYCoord();
-        ECFieldElement a = curveOfA.getA();
-        ECFieldElement b = curveOfA.getB();
-        ECFieldElement lhs = yOfPublicA.multiply(xOfPublicA);
-        ECFieldElement rhs = xOfPublicA.multiply(xOfPublicA)
-            .multiply(xOfPublicA).add(a.multiply(xOfPublicA)).add(b);
-        if(!lhs.equals(rhs)) {
+        if(!publicA.isValid()) {
             return false;
-        }*/
+        }
 
         // check if A is not on point of infinity
         if (Axh.isInfinity()) {
