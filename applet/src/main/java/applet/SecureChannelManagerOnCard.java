@@ -110,6 +110,6 @@ public class SecureChannelManagerOnCard extends SecureChannelManagerBase {
     @Override
     public void clearSessionData() {
         super.clearSessionData();
-        // TODO jpakePassiveActor.clearSessionData()
+        jpakePassiveActor.clearSessionData();
     }
 }

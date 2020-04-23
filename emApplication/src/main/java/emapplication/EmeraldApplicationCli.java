@@ -70,7 +70,6 @@ public class EmeraldApplicationCli {
         System.out.println(String.format("PC       : Using PIN `%s`", Arrays.toString(pin)));
 
         secureChannelManagerOnComputer = new SecureChannelManagerOnComputer(pin, cardManager);
-
         try {
             demoPlaintext();
 
@@ -85,6 +84,7 @@ public class EmeraldApplicationCli {
             System.err.println("Error: Error in communication with the card.");
             System.err.println("Detailed info about this error:");
             e.printStackTrace();
+            secureChannelManagerOnComputer.clearSessionData();
             return;
         }
         catch (EmProtocolError | EmeraldProtocolException e){
@@ -95,6 +95,8 @@ public class EmeraldApplicationCli {
             System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             System.err.println("Detailed info about this error:");
             e.printStackTrace();
+            secureChannelManagerOnComputer.clearSessionData();
+            return;
         }
 
         System.out.println("Done.");

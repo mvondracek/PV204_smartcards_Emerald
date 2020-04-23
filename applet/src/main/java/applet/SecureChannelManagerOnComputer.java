@@ -78,6 +78,6 @@ public class SecureChannelManagerOnComputer extends SecureChannelManagerBase {
     @Override
     public void clearSessionData() {
         super.clearSessionData();
-        // TODO jpakeActiveActor.clearSessionData()
+        jpakeActiveActor.clearSessionData();
     }
 }
