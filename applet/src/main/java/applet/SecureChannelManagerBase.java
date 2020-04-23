@@ -11,6 +11,8 @@ package applet;
     import javacard.security.KeyBuilder;
     import javacardx.crypto.Cipher;
 
+    import java.util.Arrays;
+
 public class SecureChannelManagerBase {
     private final AESKey aesKey;
     private final Cipher aesEncrypt;
@@ -18,14 +20,16 @@ public class SecureChannelManagerBase {
 
     private boolean secureChannelEstablished = false;
 
+    private static final byte ALG_AES_CBC_ISO9797_M2_BLOCK_SIZE = (byte) 16;
+
     public SecureChannelManagerBase() {
         // NOTE: We cannot use AES-GCM as JCardSim does not support AEADCipher.ALG_AES_GCM. It
         //       throws CryptoException with reason code CryptoException.NO_SUCH_ALGORITHM.
         //       https://github.com/licel/jcardsim/issues/153
 
         // init AES cipher
-        aesEncrypt = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
-        aesDecrypt = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+        aesEncrypt = Cipher.getInstance(Cipher.ALG_AES_CBC_ISO9797_M2, false);
+        aesDecrypt = Cipher.getInstance(Cipher.ALG_AES_CBC_ISO9797_M2, false);
         aesKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_256, false);
     }
 
@@ -59,26 +63,22 @@ public class SecureChannelManagerBase {
             // key is not set
             throw new EmIllegalStateException();
         }
-        if (plaintext.length % 16 != 0) {
-            // plaintext length is not a multiple of AES block size (16 B)
-            throw new EmIllegalArgumentException();
-        }
-        byte[] ciphertext = new byte[plaintext.length];
-        aesEncrypt.doFinal(plaintext, (short) 0, (short) plaintext.length, ciphertext, (short) 0);
-        return ciphertext;
+        byte[] ciphertext = new byte[plaintext.length + ALG_AES_CBC_ISO9797_M2_BLOCK_SIZE];
+        final short ciphertextLength = aesEncrypt.doFinal(plaintext, (short) 0, (short) plaintext.length, ciphertext, (short) 0);
+        return Arrays.copyOf(ciphertext, ciphertextLength);
     }
 
-    public byte[] decrypt(byte[] ciphertext) {
+    public byte[] decrypt(byte[] ciphertext, short offset, short length) {
         if (!aesKey.isInitialized() || !isSecureChannelEstablished()) {
             // key is not set
             throw new EmIllegalStateException();
         }
-        if (ciphertext.length % 16 != 0) {
+        if (length % ALG_AES_CBC_ISO9797_M2_BLOCK_SIZE != 0) {
             // ciphertext length is not a multiple of AES block size (16 B)
             throw new EmIllegalArgumentException();
         }
-        byte[] plaintext = new byte[ciphertext.length];
-        aesDecrypt.doFinal(ciphertext, (short) 0, (short) ciphertext.length, plaintext, (short) 0);
-        return plaintext;
+        byte[] plaintext = new byte[length + ALG_AES_CBC_ISO9797_M2_BLOCK_SIZE];
+        final short plaintextLength = aesDecrypt.doFinal(ciphertext, offset, length, plaintext, (short) 0);
+        return Arrays.copyOf(plaintext, plaintextLength);
     }
 }

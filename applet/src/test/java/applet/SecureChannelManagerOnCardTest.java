@@ -32,7 +32,7 @@ class SecureChannelManagerOnCardTest {
             (byte) 0xC0, (byte) 0xDE};
         byte[] ciphertext = manager.encrypt(plaintext);
         Assert.assertFalse(Arrays.equals(plaintext, ciphertext));
-        byte[] decrypted = manager.decrypt(ciphertext);
+        byte[] decrypted = manager.decrypt(ciphertext, (short)0, (short) ciphertext.length);
         Assert.assertArrayEquals(plaintext, decrypted);
     }
 }

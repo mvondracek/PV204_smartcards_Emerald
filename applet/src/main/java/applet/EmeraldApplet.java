@@ -31,8 +31,6 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
     private final SecureChannelManagerOnCard secureChannelManagerOnCard;
     private final PasswordManagerSubApplet passwordManagerSubApplet;
 
-    private final byte[] ramBuffer;
-
     /**
      * Signals whether this applet instance is blocked due to security alert counter depleted.
      * @see #securityAlertCountdown
@@ -81,8 +79,6 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
 
         // init SecureChannelManagerOnCard
         secureChannelManagerOnCard = new SecureChannelManagerOnCard(pin);
-
-        ramBuffer = JCSystem.makeTransientByteArray((short) 160, JCSystem.CLEAR_ON_DESELECT);
 
         passwordManagerSubApplet = new PasswordManagerSubApplet();
 
@@ -156,9 +152,7 @@ public class EmeraldApplet extends Applet implements ExtendedLength {
                     short dataLength = apdu.setIncomingAndReceive();
                     final short offsetCommandData = apdu.getOffsetCdata();
                     // decrypt incoming message
-                    Util.arrayCopyNonAtomic(apduBuffer, offsetCommandData, ramBuffer, (short) 0,
-                        dataLength);
-                    byte[] plaintext = secureChannelManagerOnCard.decrypt(ramBuffer);
+                    byte[] plaintext = secureChannelManagerOnCard.decrypt(apduBuffer, offsetCommandData, dataLength);
 
                     // forward decrypted message to SubApplet
                     byte[] responsePlaintext = passwordManagerSubApplet.process(plaintext);
