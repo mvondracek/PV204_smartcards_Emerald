@@ -41,6 +41,9 @@ public class EmeraldApplicationCli {
     final CardManager cardManager;
     SecureChannelManagerOnComputer secureChannelManagerOnComputer;
 
+    public static final String uiErrorInComunication = "Error: Error in communication with the card.";
+    public static final String uiDetailedInfoAboutError = "Detailed info about this error:";
+
 
     public EmeraldApplicationCli() {
         cardManager = new CardManager(true, AID_BYTES);
@@ -70,6 +73,7 @@ public class EmeraldApplicationCli {
         System.out.println(String.format("PC       : Using PIN `%s`", Arrays.toString(pin)));
 
         secureChannelManagerOnComputer = new SecureChannelManagerOnComputer(pin, cardManager);
+
         try {
             demoPlaintext();
 
@@ -81,19 +85,19 @@ public class EmeraldApplicationCli {
             demoPasswordStorage();
 
         } catch (CardException e) {
-            System.err.println("Error: Error in communication with the card.");
-            System.err.println("Detailed info about this error:");
+            System.err.println(uiErrorInComunication);
+            System.err.println(uiDetailedInfoAboutError);
             e.printStackTrace();
             secureChannelManagerOnComputer.clearSessionData();
             return;
         }
         catch (EmProtocolError | EmeraldProtocolException e){
-            System.err.println("Error: Error in communication with the card.");
+            System.err.println(uiErrorInComunication);
             System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             System.err.println("@ \"IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!\" @");
             System.err.println("@     PIN IS INCORRECT OR THIS SMARTCARD IS MALICIOUS     @");
             System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            System.err.println("Detailed info about this error:");
+            System.err.println(uiDetailedInfoAboutError);
             e.printStackTrace();
             secureChannelManagerOnComputer.clearSessionData();
             return;
