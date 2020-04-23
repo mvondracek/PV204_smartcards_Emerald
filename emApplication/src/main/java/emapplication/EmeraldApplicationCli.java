@@ -80,6 +80,8 @@ public class EmeraldApplicationCli {
             System.out.println("PC       : New shared session key established.");
             System.out.println("PC <-> SC: Key agreement finished successfully.");
 
+            erasePin(pin); pin = null;
+
             demoPasswordStorage();
 
         } catch (CardException e) {
@@ -103,11 +105,23 @@ public class EmeraldApplicationCli {
         System.out.println("Done.");
     }
 
+    /**
+     * Overwrite pin so it's not stored in RAM.
+     * @param pin byte array with pin of length {@link EmeraldProtocol#PIN_LENGTH}
+     */
+    private void erasePin(byte[] pin) {
+        for (int i = 0; i < PIN_LENGTH; i++) {
+            pin[i] = (byte) 0xFF;
+        }
+    }
+
     private byte[] requirePinInput() {
         byte[] pin = new byte[PIN_LENGTH];
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("PC       : Enter 4 digit PIN.");
+            // TODO: SECURITY: Use some mutable type for `pinInput` and wipe this object in RAM
+            //  after this method finishes to protect subsequent memory dump.
             String pinInput = scanner.next();
             if (pinInput.length() != PIN_LENGTH) {
                 System.out.println("PC       : PIN length must be 4.");
