@@ -61,7 +61,7 @@ class jpakeProtocolTest {
         asp = a.prepareSecondPayload();
         d.verifySecondIncoming(asp);
         byte[] pckey_ad = a.derivePlainCommonKey();
-        byte[] pckey_da = b.derivePlainCommonKey();
+        byte[] pckey_da = d.derivePlainCommonKey();
         //keys should be different
         if(Util.arrayCompare(pckey_ad, (short)0, pckey_da, (short)0, (short)pckey_ad.length) == 0) throw new EmIllegalStateException();
         a.clearSessionData();
