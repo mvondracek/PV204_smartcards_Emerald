@@ -46,8 +46,10 @@ public class SecureChannelManagerBase {
         aesDecrypt = Cipher.getInstance(Cipher.ALG_AES_CBC_ISO9797_M2, false);
         hmacSign = Signature.getInstance(Signature.ALG_HMAC_SHA_256, false);
         hmacVerify = Signature.getInstance(Signature.ALG_HMAC_SHA_256, false);
-        aesKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_256, false);
-        hmacKey = (HMACKey) KeyBuilder.buildKey(KeyBuilder.TYPE_HMAC, KeyBuilder.LENGTH_HMAC_SHA_256_BLOCK_64, false);
+        aesKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_256,
+            false);
+        hmacKey = (HMACKey) KeyBuilder.buildKey(KeyBuilder.TYPE_HMAC,
+            KeyBuilder.LENGTH_HMAC_SHA_256_BLOCK_64, false);
 
         hashChainGenerator = MessageDigest.getInstance(MessageDigest.ALG_SHA_256, false);
         hashChainEncryption = new byte[ALG_SHA_256_SIZE];
@@ -138,12 +140,15 @@ public class SecureChannelManagerBase {
         hashChainGenerator.doFinal(hashChainEncryption, (short) 0,
             (short) hashChainEncryption.length, hashChainEncryption, (short) 0);
 
-        byte[] ciphertextBuffer = new byte[hashChainAndPlaintext.length + ALG_AES_CBC_ISO9797_M2_BLOCK_SIZE * 2];
-        final short ciphertextLength = aesEncrypt.doFinal(hashChainAndPlaintext, (short) 0, (short) hashChainAndPlaintext.length, ciphertextBuffer, (short) 0);
+        byte[] ciphertextBuffer = new byte[hashChainAndPlaintext.length
+            + ALG_AES_CBC_ISO9797_M2_BLOCK_SIZE * 2];
+        final short ciphertextLength = aesEncrypt.doFinal(hashChainAndPlaintext, (short) 0,
+            (short) hashChainAndPlaintext.length, ciphertextBuffer, (short) 0);
         byte[] ciphertext = Arrays.copyOf(ciphertextBuffer, ciphertextLength);
 
         byte[] hmacBuffer = new byte[256];
-        final short hmacLength = hmacSign.sign(ciphertext, (short) 0, (short) ciphertext.length, hmacBuffer, (short) 0);
+        final short hmacLength = hmacSign.sign(ciphertext, (short) 0, (short) ciphertext.length,
+            hmacBuffer, (short) 0);
         byte[] hmac = Arrays.copyOf(hmacBuffer, hmacLength);
 
         byte[] ivAndHmacAndCiphertext = new byte[ivBuffer.length + hmac.length + ciphertext.length];
@@ -152,11 +157,13 @@ public class SecureChannelManagerBase {
         currentOffset += ivBuffer.length;
         System.arraycopy(hmac, 0, ivAndHmacAndCiphertext, currentOffset, hmac.length);
         currentOffset += hmac.length;
-        System.arraycopy(ciphertext, 0, ivAndHmacAndCiphertext, currentOffset, ciphertext.length);
+        System.arraycopy(ciphertext, 0, ivAndHmacAndCiphertext, currentOffset,
+            ciphertext.length);
         return ivAndHmacAndCiphertext;
     }
 
-    public byte[] decrypt(byte[] ivAndHmacAndCiphertext, short offset, short length) throws EmeraldProtocolException {
+    public byte[] decrypt(byte[] ivAndHmacAndCiphertext, short offset, short length)
+        throws EmeraldProtocolException {
         if (!aesKey.isInitialized() || !hmacKey.isInitialized() || !isSecureChannelEstablished()) {
             // key is not set
             throw new EmIllegalStateException();
@@ -171,15 +178,18 @@ public class SecureChannelManagerBase {
         byte[] ciphertext = Arrays.copyOfRange(ivAndHmacAndCiphertext, currentOffset,
             offset + length);
 
-        final boolean verified = hmacVerify.verify(ciphertext, (short) 0, (short) ciphertext.length, hmac, (short) 0, (short) hmac.length);
+        final boolean verified = hmacVerify.verify(ciphertext, (short) 0, (short) ciphertext.length,
+            hmac, (short) 0, (short) hmac.length);
         if (!verified) {
             // invalid HMAC
             throw new EmeraldProtocolException();
         }
         setIv(iv, (short) 0);
 
-        byte[] plaintextBuffer = new byte[ciphertext.length + ALG_AES_CBC_ISO9797_M2_BLOCK_SIZE * 2];
-        final short plaintextLength = aesDecrypt.doFinal(ciphertext, (short) 0, (short) ciphertext.length, plaintextBuffer, (short) 0);
+        byte[] plaintextBuffer = new byte[ciphertext.length
+            + ALG_AES_CBC_ISO9797_M2_BLOCK_SIZE * 2];
+        final short plaintextLength = aesDecrypt.doFinal(ciphertext, (short) 0,
+            (short) ciphertext.length, plaintextBuffer, (short) 0);
         byte[] hashChainAndPlaintext = Arrays.copyOf(plaintextBuffer, plaintextLength);
 
         // compare current value of hash chain with the one in decrypted plaintext
@@ -192,7 +202,7 @@ public class SecureChannelManagerBase {
         hashChainGenerator.doFinal(hashChainDecryption, (short) 0,
             (short) hashChainDecryption.length, hashChainDecryption, (short) 0);
 
-        byte[] plaintext = Arrays.copyOfRange(hashChainAndPlaintext, (short) hashChainDecryption.length, hashChainAndPlaintext.length);
-        return plaintext;
+        return Arrays.copyOfRange(hashChainAndPlaintext,
+            (short) hashChainDecryption.length, hashChainAndPlaintext.length);
     }
 }

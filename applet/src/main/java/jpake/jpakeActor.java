@@ -31,6 +31,11 @@ public abstract class jpakeActor {
     protected static BigInteger n = curvespec.getN(); /*order of subrgoup*/
     protected static BigInteger coFactor = curvespec.getH();
     protected byte[] userID;
+
+    /**
+     * Persistent PIN storage in EEPROM.
+     * NOTE: `javacard.framework.OwnerPIN` is not suitable as we need to read PIN value for J-PAKE
+     */
     protected BigInteger pinKey;
 
     public static ECCurve curve = curvespec.getCurve();
