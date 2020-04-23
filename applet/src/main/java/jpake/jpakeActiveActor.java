@@ -43,7 +43,7 @@ public final class jpakeActiveActor extends jpakeActor {
         return new jpakeActiveFirstPayload(this.userID, G1, G2, zkpx1, zkpx2);
     }
 
-    public void verifyIncoming(jpakePassivePayload ppl) {
+    public void verifyIncoming(jpakePassivePayload ppl) throws jpakeKeyAgreementException {
         if(this.status != ACTIVE_STATUS.AS_FIRST_PAYLOAD_PREPARED) {
             throw new EmIllegalStateException();
         }
@@ -57,7 +57,7 @@ public final class jpakeActiveActor extends jpakeActor {
         boolean isx2ok = ZKPUtils.verify(zkp2.getPublicA(), G, zkp2.getPublicV(), coFactor, zkp2.getResult(), challenge2);
         boolean isx2sok = ZKPUtils.verify(zkp3.getPublicA(), G, zkp3.getPublicV(), coFactor, zkp3.getResult(), challenge3);
         if(!isx1ok || !isx2ok || !isx2sok){
-            throw new EmIllegalStateException();
+            throw new jpakeKeyAgreementException();
         }
         this.G1_recv = ppl.getG1();
         this.G2_recv = ppl.getG2();
@@ -83,5 +83,10 @@ public final class jpakeActiveActor extends jpakeActor {
         byte[] key = super.derivePlainCommonKey();
         this.status = ACTIVE_STATUS.AS_KEY_DERIVED;
         return key;
+    }
+
+    public void clearSessionData(){
+        super.clearSessionData();
+        this.status = ACTIVE_STATUS.AS_INIT;
     }
 }

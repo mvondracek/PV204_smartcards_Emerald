@@ -10,11 +10,14 @@ package jpake;
 import applet.EmIllegalArgumentException;
 import applet.EmIllegalStateException;
 import java.math.BigInteger;
+import java.security.SecureRandom;
+
 import javacard.security.MessageDigest;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.BigIntegers;
 
 /*
 Abstract class with common functionality for JPAKE protocol participants.
@@ -70,5 +73,26 @@ public abstract class jpakeActor {
         byte[] outputBytes = new byte[dig.getLength()];
         dig.doFinal(pEncoded, (short) 0, (short) pEncoded.length, outputBytes, (short) 0);
         return outputBytes;
+    }
+
+    public void clearSessionData(){
+        //rewrite private members with random data
+        x1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        x2 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        BigInteger r1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        BigInteger r2 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        G1 = curve.createPoint(r1, r2);
+        r1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        r2 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        G2 = curve.createPoint(r1, r2);
+        r1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        r2 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        G1_recv = curve.createPoint(r1, r2);
+        r1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        r2 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        G2_recv = curve.createPoint(r1, r2);
+        r1 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        r2 = BigIntegers.createRandomInRange(BigInteger.ONE, n.subtract(BigInteger.ONE), new SecureRandom());
+        A_recv = curve.createPoint(r1, r2);
     }
 }

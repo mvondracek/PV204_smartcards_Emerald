@@ -127,6 +127,8 @@ public final class jpakePassivePayload {
         Util.arrayCopyNonAtomic(result3, (short) 0, output, currStart,(short)result3.length);
         return output;
     }
+
+    // TODO all these exceptions should be catch and rethrown as EmIllegalArgumentException(cause)
     public static jpakePassivePayload fromBytes(byte[] input) throws EmIllegalArgumentException,IllegalArgumentException, ArrayIndexOutOfBoundsException, NullPointerException, SystemException
     {
         short currStart = 0;

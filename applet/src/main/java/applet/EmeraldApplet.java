@@ -7,7 +7,9 @@ Team Emerald (in alphabetical order):
 
 package applet;
 
+import static applet.EmeraldProtocol.APDU_APPLET_BLOCKED;
 import static applet.EmeraldProtocol.CLA_ENCRYPTED;
+import static applet.EmeraldProtocol.CLA_KEY_AGREEMENT;
 import static applet.EmeraldProtocol.CLA_PLAINTEXT;
 import static applet.EmeraldProtocol.PIN_LENGTH;
 import static applet.EmeraldProtocol.aesKeyDevelopmentTODO;
@@ -18,17 +20,29 @@ import javacard.framework.ISOException;
 import javacard.framework.JCSystem;
 import javacard.framework.MultiSelectable;
 import javacard.framework.Util;
+import javacardx.apdu.ExtendedLength;
 
-public class EmeraldApplet extends Applet implements MultiSelectable {
+public class EmeraldApplet extends Applet implements ExtendedLength {
     /**
      * Persistent PIN storage in EEPROM.
      * TODO `javacard.framework.OwnerPIN` is not suitable as we need to read PIN value for J-PAKE
      */
     private final byte[] pin; // TODO store pin securely
-    private final SecureChannelManager secureChannelManager;
+    private final SecureChannelManagerOnCard secureChannelManagerOnCard;
     private final PasswordManagerSubApplet passwordManagerSubApplet;
 
     private final byte[] ramBuffer;
+
+    /**
+     * Signals whether this applet instance is blocked due to security alert counter depleted.
+     * @see #securityAlertCountdown
+     */
+    private boolean isAppletBlocked = false;
+    /**
+     * When this field reaches 0, applet is blocked.
+     * @see #isAppletBlocked
+     */
+    private byte securityAlertCountdown = 3;
 
     /**
      * Create instance of the applet.
@@ -65,10 +79,8 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
         pin = new byte[PIN_LENGTH];
         Util.arrayCopy(bArray, appletDataOffset, pin, (short) 0, PIN_LENGTH);
 
-        // init SecureChannelManager
-        secureChannelManager = new SecureChannelManager();
-        // TODO we use static AES key until J-PAKE is implemented
-        secureChannelManager.setKey(aesKeyDevelopmentTODO); // TODO replace with J-PAKE
+        // init SecureChannelManagerOnCard
+        secureChannelManagerOnCard = new SecureChannelManagerOnCard(pin);
 
         ramBuffer = JCSystem.makeTransientByteArray((short) 160, JCSystem.CLEAR_ON_DESELECT);
 
@@ -114,47 +126,75 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
             return;
         }
 
-        switch (apduBuffer[ISO7816.OFFSET_CLA]) {
-            case CLA_PLAINTEXT: {
-                // plaintext communication for initial ECDH
-                // TODO implement J-PAKE for ECDH and set established key to `secureChannelManager`
+        if(isAppletBlocked){
+            respondAppletBlocked(apdu);
+        }
 
-                // example plaintext communication
-                // TODO remove when J-PAKE is implemented
-                byte[] reply = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-                Util.arrayCopyNonAtomic(
-                    reply, (short) 0,
-                    apdu.getBuffer(), (short) 0,
-                    (short) reply.length);
-                apdu.setOutgoingAndSend((short) 0, (short) reply.length);
-                break;
+        try {
+            switch (apduBuffer[ISO7816.OFFSET_CLA]) {
+                case CLA_PLAINTEXT: {
+                    // example plaintext communication
+                    byte[] reply = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+                    Util.arrayCopyNonAtomic(
+                        reply, (short) 0,
+                        apdu.getBuffer(), (short) 0,
+                        (short) reply.length);
+                    apdu.setOutgoingAndSend((short) 0, (short) reply.length);
+                    break;
+                }
+                case CLA_KEY_AGREEMENT: {
+                    secureChannelManagerOnCard.processKeyAgreement(apdu);
+                    break;
+                }
+                case CLA_ENCRYPTED: {
+                    if (!secureChannelManagerOnCard.isSecureChannelEstablished()) {
+                        // count incorrect counter and consider blocking the card
+                        // we cannot encrypt without successful key agreement first
+                        throw new EmeraldProtocolException();
+                    }
+                    // encrypted communication using secure channel after successful ECDH
+                    short dataLength = apdu.setIncomingAndReceive();
+                    final short offsetCommandData = apdu.getOffsetCdata();
+                    // decrypt incoming message
+                    Util.arrayCopyNonAtomic(apduBuffer, offsetCommandData, ramBuffer, (short) 0,
+                        dataLength);
+                    byte[] plaintext = secureChannelManagerOnCard.decrypt(ramBuffer);
+
+                    // forward decrypted message to SubApplet
+                    byte[] responsePlaintext = passwordManagerSubApplet.process(plaintext);
+
+                    // encrypt outgoing message and send
+                    byte[] responseCiphertext = secureChannelManagerOnCard.encrypt(responsePlaintext);
+                    Util.arrayCopyNonAtomic(responseCiphertext, (short) 0,
+                        apduBuffer, offsetCommandData, (short) responseCiphertext.length);
+                    apdu.setOutgoingAndSend(offsetCommandData, (short) responseCiphertext.length);
+                    break;
+                }
+
+                default: {
+                    // unknown APDU class
+                    break;
+                }
             }
-
-            case CLA_ENCRYPTED: {
-                // encrypted communication using secure channel after successful ECDH
-                short dataLength = apdu.setIncomingAndReceive();
-                // decrypt incoming message
-                Util.arrayCopyNonAtomic(apduBuffer, ISO7816.OFFSET_CDATA, ramBuffer, (short) 0,
-                    dataLength);
-                byte[] plaintext = secureChannelManager.decrypt(ramBuffer);
-
-                // forward decrypted message to SubApplet
-                byte[] responsePlaintext = passwordManagerSubApplet.process(plaintext);
-
-                // encrypt outgoing message and send
-                byte[] responseCiphertext = secureChannelManager.encrypt(responsePlaintext);
-                Util.arrayCopyNonAtomic(responseCiphertext, (short) 0,
-                    apduBuffer, ISO7816.OFFSET_CDATA, (short) responseCiphertext.length);
-                apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, (short) responseCiphertext.length);
-                break;
+        }catch (EmeraldProtocolException e){
+            // possible attack, security alert
+            // decrement security alert countdown or block the card if countdown is depleted
+            if(securityAlertCountdown > 0){
+                securityAlertCountdown--;
             }
-
-            default: {
-                // unknown APDU class
-                break;
+            else {
+                isAppletBlocked = true;
+                respondAppletBlocked(apdu);
             }
         }
 
+    }
+
+    public void respondAppletBlocked(APDU apdu){
+        byte[] apduBuffer = apdu.getBuffer();
+        Util.arrayCopyNonAtomic(APDU_APPLET_BLOCKED, (short)0, apduBuffer, (short)0,
+            (short) APDU_APPLET_BLOCKED.length);
+        apdu.setOutgoingAndSend((short)0, (short) APDU_APPLET_BLOCKED.length);
     }
 
     @Override
@@ -164,18 +204,7 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
     }
 
     @Override
-    public boolean select(boolean appInstAlreadyActive) {
-        clearSessionData();
-        return true;
-    }
-
-    @Override
     public void deselect() {
-        clearSessionData();
-    }
-
-    @Override
-    public void deselect(boolean appInstAlreadyActive) {
         clearSessionData();
     }
 
@@ -187,11 +216,10 @@ public class EmeraldApplet extends Applet implements MultiSelectable {
      * Therefore, it is important to clear data even in `select` method.
      *
      * @see #select()
-     * @see #select(boolean)
      * @see #deselect()
-     * @see #deselect(boolean)
      */
     private void clearSessionData() {
         // TODO overwrite session data in RAM with random data
+        secureChannelManagerOnCard.clearSessionData();
     }
 }

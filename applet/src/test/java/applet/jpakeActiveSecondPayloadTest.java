@@ -4,13 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import javacard.framework.Util;
 import jpake.jpakeActiveSecondPayload;
+import jpake.jpakeKeyAgreementException;
 import jpake.jpakePassiveActor;
 import jpake.jpakePassivePayload;
 import org.junit.jupiter.api.Test;
 
 public class jpakeActiveSecondPayloadTest {
     @Test
-    public void serializationOkTest() throws EmIllegalStateException {
+    public void serializationOkTest() throws jpakeKeyAgreementException {
         byte[] auid = "Alice".getBytes();
         byte[] buid = "Bob".getBytes();
         byte[] pin_key = {1, 1, 1, 1};
@@ -35,8 +36,7 @@ public class jpakeActiveSecondPayloadTest {
     }
 
     @Test
-    public void deserializePayloadBadFormat()
-    {
+    public void deserializePayloadBadFormat() throws jpakeKeyAgreementException {
         byte[] auid = "Alice".getBytes();
         byte[] buid = "Bob".getBytes();
         byte[] pin_key = {1, 1, 1, 1};
@@ -60,7 +60,7 @@ public class jpakeActiveSecondPayloadTest {
     }
 
     @Test
-    public void deserializePayloadTooShort(){
+    public void deserializePayloadTooShort() throws jpakeKeyAgreementException {
         byte[] auid = "Alice".getBytes();
         byte[] buid = "Bob".getBytes();
         byte[] pin_key = {1, 1, 1, 1};
@@ -111,7 +111,7 @@ public class jpakeActiveSecondPayloadTest {
     }
 
     @Test
-    public void deserializePayloadTooLong(){
+    public void deserializePayloadTooLong() throws jpakeKeyAgreementException {
         //what if we have something after the end of a "good" payload
         byte[] auid = "Alice".getBytes();
         byte[] buid = "Bob".getBytes();

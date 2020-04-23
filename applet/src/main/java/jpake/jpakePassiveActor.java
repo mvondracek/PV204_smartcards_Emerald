@@ -21,8 +21,7 @@ public final class jpakePassiveActor extends jpakeActor{
         this.status = PASSIVE_STATUS.PS_INIT;
     }
 
-    public void verifyFirstIncoming(jpakeActiveFirstPayload afpl)
-    {
+    public void verifyFirstIncoming(jpakeActiveFirstPayload afpl) throws jpakeKeyAgreementException {
         if(this.status != PASSIVE_STATUS.PS_INIT) {
             throw new EmIllegalStateException();
         }
@@ -33,7 +32,7 @@ public final class jpakePassiveActor extends jpakeActor{
         boolean isx1ok = ZKPUtils.verify(zkpx1.getPublicA(), G, zkpx1.getPublicV(), coFactor, zkpx1.getResult(), challenge1);
         boolean isx2ok = ZKPUtils.verify(zkpx2.getPublicA(), G, zkpx2.getPublicV(), coFactor, zkpx2.getResult(), challenge2);
         if(!isx1ok || !isx2ok){
-            throw new EmIllegalStateException();
+            throw new jpakeKeyAgreementException();
         }
         this.G1_recv = afpl.getG1();
         this.G2_recv = afpl.getG2();
@@ -64,8 +63,7 @@ public final class jpakePassiveActor extends jpakeActor{
         return new jpakePassivePayload(this.userID, G1,G2,B,zkpx1,zkpx2,zkpx2s);
     }
 
-    public void verifySecondIncoming(jpakeActiveSecondPayload aspl)
-    {
+    public void verifySecondIncoming(jpakeActiveSecondPayload aspl) throws jpakeKeyAgreementException {
         if(this.status != PASSIVE_STATUS.PS_PASSIVE_PAYLOAD_PREPARED) {
             throw new EmIllegalStateException();
         }
@@ -74,7 +72,7 @@ public final class jpakePassiveActor extends jpakeActor{
         BigInteger challenge = ZKPUtils.computeChallenge(G, zkpx2s.getPublicV(), zkpx2s.getPublicA(), aspl.getSenderID());
         boolean isx2sok = ZKPUtils.verify(zkpx2s.getPublicA(), G, zkpx2s.getPublicV(), coFactor, zkpx2s.getResult(), challenge);
         if(!isx2sok){
-            throw new EmIllegalStateException();
+            throw new jpakeKeyAgreementException();
         }
         this.A_recv = aspl.getA();
         this.status = PASSIVE_STATUS.PS_SECOND_INCOMING_VERIFIED;
@@ -89,5 +87,10 @@ public final class jpakePassiveActor extends jpakeActor{
         byte[] key = super.derivePlainCommonKey();
         this.status = PASSIVE_STATUS.PS_KEY_DERIVED;
         return key;
+    }
+
+    public void clearSessionData(){
+        super.clearSessionData();
+        this.status = PASSIVE_STATUS.PS_INIT;
     }
 }
