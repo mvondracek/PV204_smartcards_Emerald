@@ -1,5 +1,6 @@
 # Modern Secure Channel on Certified Smartcards Using Ephemeral ECDH Keys
 
+![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/mvondracek/PV204_smartcards_Emerald?include_prereleases)
 [![Build Status](https://travis-ci.org/mvondracek/PV204_smartcards_Emerald.svg?branch=master)](https://travis-ci.org/mvondracek/PV204_smartcards_Emerald)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/c9de1ba1e64b36d39113/test_coverage)](https://codeclimate.com/github/mvondracek/PV204_smartcards_Emerald/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c9de1ba1e64b36d39113/maintainability)](https://codeclimate.com/github/mvondracek/PV204_smartcards_Emerald/maintainability)
