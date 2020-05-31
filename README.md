@@ -14,6 +14,9 @@
 [@lsolodkova](https://github.com/lsolodkova),
 [@mvondracek](https://github.com/mvondracek) (in alphabetical order).
 
+| ⚠️**Disclaimer:** | As this started as a cryptographic school project, authors do not provide any warranty of fitness for production use. |
+| --- | :--- |
+
 The project aims to create a JavaCard applet and a PC application for secure channel
 communication. The user is provided with a smart card (Java Card) with pre-personalized
 4-digit PIN and a paper with this PIN printed. If the user wants to use the card, they have to put
