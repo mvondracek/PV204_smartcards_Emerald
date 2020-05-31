@@ -1,5 +1,6 @@
 # Modern Secure Channel on Certified Smartcards Using Ephemeral ECDH Keys
 
+![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/mvondracek/PV204_smartcards_Emerald?include_prereleases)
 [![Build Status](https://travis-ci.org/mvondracek/PV204_smartcards_Emerald.svg?branch=master)](https://travis-ci.org/mvondracek/PV204_smartcards_Emerald)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/c9de1ba1e64b36d39113/test_coverage)](https://codeclimate.com/github/mvondracek/PV204_smartcards_Emerald/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c9de1ba1e64b36d39113/maintainability)](https://codeclimate.com/github/mvondracek/PV204_smartcards_Emerald/maintainability)
@@ -12,6 +13,9 @@
 [@OTristanF](https://github.com/OTristanF),
 [@lsolodkova](https://github.com/lsolodkova),
 [@mvondracek](https://github.com/mvondracek) (in alphabetical order).
+
+| ⚠️**Disclaimer:** | As this started as a cryptographic school project, authors do not provide any warranty of fitness for production use. |
+| --- | :--- |
 
 The project aims to create a JavaCard applet and a PC application for secure channel
 communication. The user is provided with a smart card (Java Card) with pre-personalized
