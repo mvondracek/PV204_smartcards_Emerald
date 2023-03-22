@@ -10,7 +10,7 @@
 > [Masaryk University (MU)](https://www.muni.cz/en)
 
 **Team** Emerald:
-[@OTristanF](https://github.com/OTristanF),
+[@OTFlorian](https://github.com/OTFlorian),
 [@lsolodkova](https://github.com/lsolodkova),
 [@mvondracek](https://github.com/mvondracek) (in alphabetical order).
 
